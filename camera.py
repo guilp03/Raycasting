@@ -21,7 +21,7 @@ def collor(camera, vetor_atual, objetos):
                 continue
             
             tmp1 = (-b + np.sqrt(delta))/(2*a)
-            tmp2 = (-b + np.sqrt(delta))/(2*a)
+            tmp2 = (-b - np.sqrt(delta))/(2*a)
             
             if tmp1 < 0 and tmp2 < 0:
                 continue
