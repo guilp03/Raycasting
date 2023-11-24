@@ -60,12 +60,12 @@ camera = np.array([0,0,0])
 centro = np.array([1,0,0])
 up = np.array([0,1,0])
 distancia = 1
-hres = 500
-vres = 500
-tam_x = 0.5
-tam_y = 0.5
+hres = 700
+vres = 700
+tam_x = 1
+tam_y = 1
 
-w = normalize(centro - camera) # vetor normal
+w = normalize(centro - camera) 
 u = normalize(np.cross(up,w))
 v = normalize(np.cross(w,u)) * -1
 
@@ -77,6 +77,9 @@ desl_v = ((2*tam_y)/(vres-1)) * v
 vetor_inicial = w * distancia - u * tam_x - tam_y * v
 
 objetos = []
+
+adcionar_esfera(0.5, (2, 0, 0), (0, 255, 0))
+adcionar_plano((3, 1, 1), (2, -1, 0), (0, 0, 139))
 
 for i in range(hres):
     for j in range(vres):
