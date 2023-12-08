@@ -79,7 +79,7 @@ vetor_inicial = w * distancia - u * tam_x - tam_y * v
 objetos = []
 
 adcionar_esfera(0.5, (2, 0, 0), (0, 255, 0))
-adcionar_plano((3, 1, 1), (2, -1, 0), (0, 0, 139))
+adcionar_plano((0, -1, 0), (0, 1, 1), (0, 0, 139))
 
 for i in range(hres):
     for j in range(vres):
