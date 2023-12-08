@@ -1,5 +1,6 @@
 import numpy as np
 import cv2 as cv
+import obj
 INF = 9999999999
 
 def normalize(v):
@@ -161,14 +162,27 @@ vetor_inicial = w * distancia - u * tam_x - tam_y * v
 #################################################################################
 ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
 objetos = []
+## EXEMPLOS
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
-adcionar_triangulo((255,0,0),(1,1,0),(1,0,1), (1,0,-1))
-adcionar_esfera((0,0,255), 0.1, (1, 0, 0))
-adcionar_esfera((255,0,255), 0.1, (1, 1, 0))
-adcionar_esfera((0,255,255), 0.1, (1, 0, 1))
-adcionar_esfera((0,255,0), 0.1, (1, 0, -1))
+
+## ESFERA E TRIÂNGULO
+# adcionar_triangulo((255,0,0),(1,1,0),(1,0,1), (1,0,-1))
+# adcionar_esfera((0,0,255), 0.1, (1, 0, 0))
+# adcionar_esfera((255,0,255), 0.1, (1, 1, 0))
+# adcionar_esfera((0,255,255), 0.1, (1, 0, 1))
+# adcionar_esfera((0,255,0), 0.1, (1, 0, -1))
+
+## MALHA DE TRIÂNGULOS
+
+# quadrado = obj.read_obj("square.obj", (126,126,126))
+# for triangulo in quadrado:
+#     adcionar_triangulo(*triangulo)
+    
+cubo = obj.read_obj("cube2.obj", (50,160,50))
+for triangulo in cubo:
+    adcionar_triangulo(*triangulo)
 
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
