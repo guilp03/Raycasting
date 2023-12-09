@@ -167,10 +167,10 @@ objetos = []
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
 
-adcionar_esfera(0.5, (2, 0, 0), (0, 255, 0))
-adcionar_plano((0, -1, 0), (0, 1, 1), (0, 0, 139))
+#adcionar_esfera(0.5, (1, 0, 0), (0, 255, 0))
+#adcionar_plano((0, -1, 0), (0, 1, 1), (0, 0, 139))
 ## ESFERA E TRIÂNGULO
-adcionar_triangulo((255,0,0),(1,1,0),(1,0,1), (1,0,-1))
+adcionar_triangulo((255,0,0),(3,1,0),(3,0,1), (3,0,-1))
 # adcionar_esfera((0,0,255), 0.1, (1, 0, 0))
 # adcionar_esfera((255,0,255), 0.1, (1, 1, 0))
 # adcionar_esfera((0,255,255), 0.1, (1, 0, 1))
@@ -182,9 +182,9 @@ adcionar_triangulo((255,0,0),(1,1,0),(1,0,1), (1,0,-1))
 # for triangulo in quadrado:
 #     adcionar_triangulo(*triangulo)
     
-#cubo = obj.read_obj("cube.obj", (50,160,50))
-#for triangulo in cubo:
-#    adcionar_triangulo(*triangulo)
+cubo = obj.read_obj("cube.obj", (50,160,50))
+for triangulo in cubo:
+   adcionar_triangulo(*triangulo)
 
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final

@@ -40,22 +40,18 @@ def read_obj(path: str, cor, shift = (0,0,0)):
                 # Não será usado no momento
                 pass
             if f_pattern.match(line):
-                print(line)
                 # Nesse caso, espera-se linhas na forma f a/x b/y c/z, particularmente
                 nums = tuple(map(int, re.findall(int_pattern, line)))
-                print(nums)
                 # Reduzir 1 de index
                 nums = tuple(map(lambda x: x-1, nums))
                 
                 if nums.__len__() == 6:
                     triangulo_colorless = (vertices[nums[0]], vertices[nums[2]], vertices[nums[4]])
                 elif nums.__len__() == 9:
-                    print(f"{nums[0]} {nums[3]} {nums[6]}")
                     triangulo_colorless = (vertices[nums[0]], vertices[nums[3]], vertices[nums[6]])
                 # Recuperar vertexes do triângulo
                 triangulo = (cor,) + triangulo_colorless
                 triangulos.append(triangulo)
-    print(triangulos.__len__())
     return triangulos
                 
                 
