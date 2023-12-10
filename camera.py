@@ -8,7 +8,7 @@ def normalize(v):
     v = v/np.linalg.norm(v)
     return v
 
-def intersect_triangle(ray, v0, v1, v2, camera):
+def intersect_triangle(ray, v0, v1, v2, camera, cor_base, normal):
     '''''FUNÇÃO DADA NO LIVRO PRA CALCULAR A INTERSECÇÃO COM O TRIANGULO'''''
     a = v0[0] - v1[0]
     b = v0[0] - v2[0]
@@ -42,28 +42,48 @@ def intersect_triangle(ray, v0, v1, v2, camera):
     e1 = d*m - b*n - c*p
     beta = e1*inv_denom
     if beta < 0:
-        return INF
+        return (INF, None)  
     
     r = e*l - h*i
     e2 = a*n + d*q + c*r
     gamma = e2 * inv_denom
     if gamma < 0:
-        return INF  
+        return (INF, None)  
     if beta + gamma > 1:
-        return INF
+        return (INF, None)  
     
     e3 = a*p - b*r + d*s
     t = e3 * inv_denom
     if t< 0.01:
-        return INF
+        return (INF, None)  
     
-    return t
+######################################    
+    # Calcular cor
+    colorizar = (0.0,0.0,0.0)
+    for luz in luzes_paralelas:
+        # Calcula o seno entre a direção da luz e o vetor normal
+        # Soma à colorização
+        fator = abs(np.dot(luz[2], normal))
+        
+        # Iluminação mínima
+        if fator < 0.1:
+            fator = 0.1
+            
+        lumen_final = luz[3] * fator
+        update = lumen_final * np.multiply(luz[1], cor_base)
+        colorizar += update
+    if luzes_paralelas.__len__() == 0:
+        colorizar = cor_base
+        
+    
+    return (t, colorizar)
 
 def collor(camera, vetor_atual, objetos):
     ''''' FUNÇÃO PARA CALCULAR A COR DE CADA OBJETO COM BASE NA MENOR DISTANCIA DA CAMERA '''''
     T = INF
     cor = np.array([0,0,0])
     for i in objetos:
+        cor_res = i[1]
         if i[0].lower() == "esfera":
             '''''INTERSECÇÃO COM A ESFERA'''''
             oc = camera - i[3]
@@ -107,11 +127,11 @@ def collor(camera, vetor_atual, objetos):
             tmp = np.dot(i[5],vetor_atual)
             if tmp == 0:
                 continue
-            current = intersect_triangle(vetor_atual, i[2], i[3], i[4], camera)
+            (current, cor_res) = intersect_triangle(vetor_atual, i[2], i[3], i[4], camera, i[1], i[5])
         # pega o menor tempo e joga em T
         if current < T:
             T = current
-            cor = i[1]
+            cor = cor_res
     return cor
 #################################################################################
 '''''FUNÇÕES PARA ADICIONAR OBJETOS'''''
@@ -125,6 +145,10 @@ def adcionar_esfera(raio, ponto, cor):
     ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 
 
     objetos.append(["esfera", np.array(cor), raio, np.array(ponto)])
+
+def adicionar_luz_paralela(direção, lumen, cor = (255,255,255)):
+    ''''' 0 = TIPO | 1 = COR | 2 = DIREÇÃO | 3 = LUMINOSIDADE (ENTRE 0 E 1) '''''
+    luzes_paralelas.append(["luz paralela", np.array(cor)/255.0, normalize(np.array(direção)), lumen])
 
 def adcionar_triangulo(cor, p1, p2, p3):
     ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL '''''
@@ -162,6 +186,10 @@ vetor_inicial = w * distancia - u * tam_x - tam_y * v
 #################################################################################
 ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
 objetos = []
+luzes_paralelas = []
+
+adicionar_luz_paralela((1,0.3,-0.5), 1.0, (255,255,255))
+
 ## EXEMPLOS
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
@@ -170,7 +198,7 @@ objetos = []
 #adcionar_esfera(0.5, (1, 0, 0), (0, 255, 0))
 #adcionar_plano((0, -1, 0), (0, 1, 1), (0, 0, 139))
 ## ESFERA E TRIÂNGULO
-adcionar_triangulo((255,0,0),(3,1,0),(3,0,1), (3,0,-1))
+# adcionar_triangulo((255,0,0),(3,1,0),(3,0,1), (3,0,-1))
 # adcionar_esfera((0,0,255), 0.1, (1, 0, 0))
 # adcionar_esfera((255,0,255), 0.1, (1, 1, 0))
 # adcionar_esfera((0,255,255), 0.1, (1, 0, 1))
@@ -182,17 +210,27 @@ adcionar_triangulo((255,0,0),(3,1,0),(3,0,1), (3,0,-1))
 # for triangulo in quadrado:
 #     adcionar_triangulo(*triangulo)
     
-cubo = obj.read_obj("cube.obj", (50,160,50))
+cubo = obj.read_obj("cube.obj", (255,255,255))
 for triangulo in cubo:
    adcionar_triangulo(*triangulo)
+   
+# rec = obj.read_obj("rectangle2.obj", (50,160,50))
+# for triangulo in rec:
+#    adcionar_triangulo(*triangulo)
 
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
     for j in range(vres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
-        imagem[j,i] = collor(camera, vetor_atual, objetos)
-
+        val = collor(camera, vetor_atual, objetos)
+        if val[0] > 255:
+            val[0] = 255
+        if val[1] > 255:
+            val[1] = 255
+        if val[2] > 255:
+            val[2] = 255
+        imagem[j,i] = val
 cv.imshow("grupo05", imagem)
 cv.waitKey(0)
 cv.destroyWindow('i')
