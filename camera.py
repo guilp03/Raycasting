@@ -113,6 +113,52 @@ def collor(camera, vetor_atual, objetos):
             T = current
             cor = i[1]
     return cor
+
+'''DEFININDO MATRIZES DE ROTAÇÃO E REFLEXÃO'''
+def translacao (ponto, p1,p2,p3):
+    ponto.append(1)
+    ponto = np.array(ponto)
+    matriz_translacao = np.array([ [1, 0, 0, p1],
+                                   [0, 1, 0, p2], 
+                                   [0, 0, 1, p3], 
+                                   [0, 0, 0, 1]])
+    value = matriz_translacao @ ponto
+    value = np.delete(value, 3)
+    return value
+
+def rotacao_x(ponto, t):
+    ponto.append(1)
+    ponto = np.array(ponto)
+    matriz_rotacao = np.array([[1, 0, 0, 0], 
+                               [0, np.cos(t), -np.sin(t), 0], 
+                               [0,np.sin(t), -np.cos(t), 0], 
+                               [0, 0, 0, 1]])
+    value = matriz_rotacao @ ponto
+    value = np.delete(value, 3)
+    return value
+
+def rotacao_y(ponto, t):
+    ponto.append(1)
+    ponto = np.array(ponto)
+    matriz_rotacao = np.array([[np.cos(t), 0, np.sin(t), 0], 
+                               [0, 1, 0, 0], 
+                               [-np.sin(t), 0, np.cos(t), 0], 
+                               [0, 0, 0, 1]])
+    value = matriz_rotacao @ ponto
+    value = np.delete(value, 3)
+    return value
+
+def rotacao_z(ponto, t):
+    ponto.append(1)
+    ponto = np.array(ponto)
+    matriz_rotacao = np.array([[np.cos(t), -np.sin(t), 0, 0],
+                               [np.sin(t), np.cos, 0, 0], 
+                               [0,0,1,0], 
+                               [0,0,0,1]])
+    value = matriz_rotacao @ ponto
+    value = np.delete(value, 3)
+    return value
+
 #################################################################################
 '''''FUNÇÕES PARA ADICIONAR OBJETOS'''''
 # att: futuramente vai ser melhor criar uma classe pra cada
@@ -166,26 +212,19 @@ objetos = []
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
-
-#adcionar_esfera(0.5, (1, 0, 0), (0, 255, 0))
-#adcionar_plano((0, -1, 0), (0, 1, 1), (0, 0, 139))
-## ESFERA E TRIÂNGULO
-adcionar_triangulo((255,0,0),(3,1,0),(3,0,1), (3,0,-1))
-# adcionar_esfera((0,0,255), 0.1, (1, 0, 0))
-# adcionar_esfera((255,0,255), 0.1, (1, 1, 0))
-# adcionar_esfera((0,255,255), 0.1, (1, 0, 1))
-# adcionar_esfera((0,255,0), 0.1, (1, 0, -1))
-
+adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
+adcionar_triangulo((255,0,0), translacao([4,0,1), translacao([4,0,-1), translacao([4,1,0))
 ## MALHA DE TRIÂNGULOS
-
+print(translacao([4,0,1]))
+print(translacao([4,0,-1]))
+print(translacao([4,1,0]))
 # quadrado = obj.read_obj("square.obj", (126,126,126))
 # for triangulo in quadrado:
 #     adcionar_triangulo(*triangulo)
     
-cubo = obj.read_obj("cube.obj", (50,160,50))
-for triangulo in cubo:
-   adcionar_triangulo(*triangulo)
-
+#cubo = obj.read_obj("cube.obj", (50,160,50))
+#for triangulo in cubo:
+#   adcionar_triangulo(*triangulo)
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
