@@ -213,7 +213,7 @@ objetos = []
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
 adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
-adcionar_triangulo((255,0,0), translacao([4,0,1), translacao([4,0,-1), translacao([4,1,0))
+adcionar_triangulo((255,0,0), translacao([4,0,1]), translacao([4,0,-1]), translacao([4,1,0]))
 ## MALHA DE TRIÂNGULOS
 print(translacao([4,0,1]))
 print(translacao([4,0,-1]))
