@@ -136,12 +136,13 @@ def translacao (ponto, p1,p2,p3):
     return nparray_para_tuple(value)
 
 def rotacao_x(ponto, t):
+    t = np.radians(t)
     ponto = ponto + (1,)
     ponto = np.array(ponto)
     matriz_rotacao = np.array([
         [1, 0, 0, 0], 
         [0, np.cos(t), -np.sin(t), 0], 
-        [0,np.sin(t), -np.cos(t), 0], 
+        [0,np.sin(t), np.cos(t), 0], 
         [0, 0, 0, 1]
     ])
     value = matriz_rotacao @ ponto
@@ -149,6 +150,7 @@ def rotacao_x(ponto, t):
     return nparray_para_tuple(value)
 
 def rotacao_y(ponto, t):
+    t = np.radians(t)
     ponto = ponto + (1,)
     ponto = np.array(ponto)
     matriz_rotacao = np.array([
@@ -162,6 +164,7 @@ def rotacao_y(ponto, t):
     return nparray_para_tuple(value)
 
 def rotacao_z(ponto, t):
+    t = np.radians(t)
     ponto = ponto + (1,)
     ponto = np.array(ponto)
     matriz_rotacao = np.array([
@@ -246,14 +249,31 @@ objetos = []
 #adcionar_triangulo((255,0,0), translacao([4,0,1], 1, 2, 1), translacao([4,0,-1],1,2,1), translacao([4,1,0],1,2,1))
 #adcionar_plano((0,255,0), (4,0,-1), (4,1,0))
 #adcionar_plano((255,0,0), rotacao_z([4,0,-1],30), rotacao_z([4,1,0],30))
-## MALHA DE TRIÂNGULOS
-#print(rotacao_z([4,0,-1],30))
-#print(translacao([4,0,-1]))
-#print(rotacao_z([4,1,0],30))
-# quadrado = obj.read_obj("square.obj", (126,126,126))
-# for triangulo in quadrado:
-#     adcionar_triangulo(*triangulo)
-    
+#adcionar_plano(
+#    (152,186, 213),
+#    (1,0,-1),
+#    (3,2,0)
+#)
+adcionar_plano(
+    (127, 0, 255),
+    rotacao_z((4,0,-1), 15),
+    rotacao_z((3,2,0), 15)
+)
+adcionar_triangulo(
+    (127, 0, 255),
+    rotacao_z((4,0,-1), 15),
+    rotacao_z((4,0,1), 15),
+    rotacao_z((4,1,0), 15)
+)
+
+# ROSA PINK (127, 0, 255)
+# BEGE (152,186, 213)
+
+quadrado = obj.read_obj("square.obj", (126,126,126))
+for triangulo in quadrado:
+    adcionar_triangulo(*triangulo)
+
+
 cubo = obj.read_obj("cube.obj", (50,160,50))
 
 for triangulo in cubo:
@@ -265,7 +285,7 @@ for i in range(hres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
 
-cv.imshow("grupo05 - ANTES", imagem)
+cv.imshow("grupo06 - ANTES", imagem)
 
 # LIMPAR
 objetos = []
@@ -284,13 +304,13 @@ for triangulo in cubo:
     pontos = tuple(map(lambda x: translacao(x, 4, 0, 0), pontos))
         
     adcionar_triangulo(cor, *pontos)
-# for que percorre toda a tela e gera a intesecção com os objetos
+ #for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
     for j in range(vres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
 
-cv.imshow("grupo05 - DEPOIS", imagem)
+cv.imshow("grupo06 - DEPOIS", imagem)
 cv.waitKey(0)
 cv.destroyWindow('i')
