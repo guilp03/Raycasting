@@ -152,7 +152,7 @@ def rotacao_z(ponto, t):
     ponto.append(1)
     ponto = np.array(ponto)
     matriz_rotacao = np.array([[np.cos(t), -np.sin(t), 0, 0],
-                               [np.sin(t), np.cos, 0, 0], 
+                               [np.sin(t), np.cos(t), 0, 0], 
                                [0,0,1,0], 
                                [0,0,0,1]])
     value = matriz_rotacao @ ponto
@@ -212,12 +212,14 @@ objetos = []
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
-adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
-adcionar_triangulo((255,0,0), translacao([4,0,1]), translacao([4,0,-1]), translacao([4,1,0]))
+#adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
+#adcionar_triangulo((255,0,0), translacao([4,0,1], 1, 2, 1), translacao([4,0,-1],1,2,1), translacao([4,1,0],1,2,1))
+#adcionar_plano((0,255,0), (4,0,-1), (4,1,0))
+#adcionar_plano((255,0,0), rotacao_z([4,0,-1],30), rotacao_z([4,1,0],30))
 ## MALHA DE TRIÂNGULOS
-print(translacao([4,0,1]))
-print(translacao([4,0,-1]))
-print(translacao([4,1,0]))
+#print(rotacao_z([4,0,-1],30))
+#print(translacao([4,0,-1]))
+#print(rotacao_z([4,1,0],30))
 # quadrado = obj.read_obj("square.obj", (126,126,126))
 # for triangulo in quadrado:
 #     adcionar_triangulo(*triangulo)
