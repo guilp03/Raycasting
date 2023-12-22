@@ -114,50 +114,80 @@ def collor(camera, vetor_atual, objetos):
             cor = i[1]
     return cor
 
+'''FUNÇÃO PARA RETIRAR O NP.ARRAY, FACILITANDO COMPOSIÇÃO DE TRANSFORMAÇÕES'''
+def nparray_para_tuple(vetor):
+    if type(vetor) == list or type(vetor) == tuple or type(vetor) == np.ndarray:
+        return tuple(nparray_para_tuple(i) for i in vetor)
+    else:
+        return vetor
+
 '''DEFININDO MATRIZES DE ROTAÇÃO E REFLEXÃO'''
 def translacao (ponto, p1,p2,p3):
-    ponto.append(1)
+    ponto = ponto + (1,)
     ponto = np.array(ponto)
-    matriz_translacao = np.array([ [1, 0, 0, p1],
-                                   [0, 1, 0, p2], 
-                                   [0, 0, 1, p3], 
-                                   [0, 0, 0, 1]])
+    matriz_translacao = np.array([
+        [1, 0, 0, p1],
+        [0, 1, 0, p2], 
+        [0, 0, 1, p3], 
+        [0, 0, 0, 1]
+    ])
     value = matriz_translacao @ ponto
     value = np.delete(value, 3)
-    return value
+    return nparray_para_tuple(value)
 
 def rotacao_x(ponto, t):
-    ponto.append(1)
+    ponto = ponto + (1,)
     ponto = np.array(ponto)
-    matriz_rotacao = np.array([[1, 0, 0, 0], 
-                               [0, np.cos(t), -np.sin(t), 0], 
-                               [0,np.sin(t), -np.cos(t), 0], 
-                               [0, 0, 0, 1]])
+    matriz_rotacao = np.array([
+        [1, 0, 0, 0], 
+        [0, np.cos(t), -np.sin(t), 0], 
+        [0,np.sin(t), -np.cos(t), 0], 
+        [0, 0, 0, 1]
+    ])
     value = matriz_rotacao @ ponto
     value = np.delete(value, 3)
-    return value
+    return nparray_para_tuple(value)
 
 def rotacao_y(ponto, t):
-    ponto.append(1)
+    ponto = ponto + (1,)
     ponto = np.array(ponto)
-    matriz_rotacao = np.array([[np.cos(t), 0, np.sin(t), 0], 
-                               [0, 1, 0, 0], 
-                               [-np.sin(t), 0, np.cos(t), 0], 
-                               [0, 0, 0, 1]])
+    matriz_rotacao = np.array([
+        [np.cos(t), 0, np.sin(t), 0], 
+        [0, 1, 0, 0], 
+        [-np.sin(t), 0, np.cos(t), 0], 
+        [0, 0, 0, 1]
+    ])
     value = matriz_rotacao @ ponto
     value = np.delete(value, 3)
-    return value
+    return nparray_para_tuple(value)
 
 def rotacao_z(ponto, t):
-    ponto.append(1)
+    ponto = ponto + (1,)
     ponto = np.array(ponto)
-    matriz_rotacao = np.array([[np.cos(t), -np.sin(t), 0, 0],
-                               [np.sin(t), np.cos(t), 0, 0], 
-                               [0,0,1,0], 
-                               [0,0,0,1]])
+    matriz_rotacao = np.array([
+        [np.cos(t), -np.sin(t), 0, 0],
+        [np.sin(t), np.cos(t), 0, 0], 
+        [0, 0, 1, 0], 
+        [0, 0, 0, 1]
+    ])
     value = matriz_rotacao @ ponto
     value = np.delete(value, 3)
-    return value
+    return nparray_para_tuple(value)
+
+def expandir(ponto, t):
+    ponto = ponto + (1,)
+    ponto = np.array(ponto)
+    ponto = ponto + (1,)
+    ponto = np.array(ponto)
+    matriz_rotacao = np.array([
+        [t, 0, 0, 0],
+        [0, t, 0, 0], 
+        [0, 0, t, 0], 
+        [0, 0, 0, 1]
+    ])
+    value = matriz_rotacao @ ponto
+    value = np.delete(value, 3)
+    return nparray_para_tuple(value)
 
 #################################################################################
 '''''FUNÇÕES PARA ADICIONAR OBJETOS'''''
@@ -224,9 +254,18 @@ objetos = []
 # for triangulo in quadrado:
 #     adcionar_triangulo(*triangulo)
     
-#cubo = obj.read_obj("cube.obj", (50,160,50))
-#for triangulo in cubo:
-#   adcionar_triangulo(*triangulo)
+cubo = obj.read_obj("cube.obj", (50,160,50))
+for triangulo in cubo:
+    cor = triangulo[0]
+    pontos = (triangulo[1], triangulo[2], triangulo[3])
+    pontos = tuple(map(lambda x: translacao(x, -4, 0, 0), pontos))
+    pontos = tuple(map(lambda x: expandir(x, 2), pontos))
+    pontos = tuple(map(lambda x: rotacao_x(x, 20), pontos))
+    pontos = tuple(map(lambda x: rotacao_y(x, 20), pontos))
+    pontos = tuple(map(lambda x: rotacao_z(x, 20), pontos))
+    pontos = tuple(map(lambda x: translacao(x, 4, 0, 0), pontos))
+        
+    adcionar_triangulo(cor, *pontos)
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
