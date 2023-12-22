@@ -255,6 +255,24 @@ objetos = []
 #     adcionar_triangulo(*triangulo)
     
 cubo = obj.read_obj("cube.obj", (50,160,50))
+
+for triangulo in cubo:
+    adcionar_triangulo(*triangulo)
+# for que percorre toda a tela e gera a intesecção com os objetos
+# para gerar a imagem final
+for i in range(hres):
+    for j in range(vres):
+        vetor_atual = vetor_inicial + i*desl_h + j*desl_v
+        imagem[j,i] = collor(camera, vetor_atual, objetos)
+
+cv.imshow("grupo05 - ANTES", imagem)
+
+# LIMPAR
+objetos = []
+
+
+## EXEMPLOS APÓS TRANSFORMAÇÃO
+    
 for triangulo in cubo:
     cor = triangulo[0]
     pontos = (triangulo[1], triangulo[2], triangulo[3])
@@ -273,6 +291,6 @@ for i in range(hres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
 
-cv.imshow("grupo05", imagem)
+cv.imshow("grupo05 - DEPOIS", imagem)
 cv.waitKey(0)
 cv.destroyWindow('i')
