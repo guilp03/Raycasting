@@ -288,14 +288,14 @@ objetos = []
 
 textura_quadrado = textura.Textura("square.texture.jpg")
 
-quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
-for triangulo in quadrado:
-    adcionar_triangulo(*triangulo, textura_quadrado)
+# quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
+# for triangulo in quadrado:
+#     adcionar_triangulo(*triangulo, textura_quadrado)
 
 
-cubo = obj.read_obj("cube2.obj", (50,140,70))
+cubo = obj.read_obj("cube2.obj", (50,140,70), texture_on=True)
 for triangulo in cubo:
-    adcionar_triangulo(*triangulo)
+    adcionar_triangulo(*triangulo, textura_quadrado)
     
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
