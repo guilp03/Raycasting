@@ -18,7 +18,12 @@ def intersect_triangle(ray, v0, v1, v2, camera, cor, vt0, vt1, vt2, text: textur
     Se tiver dentro, então, aplica a textura relativa com base em vt0, vt1 e vt2
     
     Também verifica se o parâmetro do raio é menor que 1, embora seja desnecessário
+    
+    Consegui piorar a performance disso MUITO! ahhahahahahahah
     '''
+    
+    # TODO: performance disso está muito ruim
+    
     normal = np.cross(v0-v1, v0-v2)
     
     # Restrições: se o triangulo for degenerado ou se o raio for paralelo ao triangulo
@@ -288,9 +293,9 @@ for triangulo in quadrado:
     adcionar_triangulo(*triangulo, textura_quadrado)
 
 
-# cubo = obj.read_obj("cube.obj", (50,160,50))
-# for triangulo in cubo:
-#     adcionar_triangulo(*triangulo)
+cubo = obj.read_obj("cube2.obj", (50,140,70))
+for triangulo in cubo:
+    adcionar_triangulo(*triangulo)
     
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
