@@ -10,60 +10,68 @@ def normalize(v):
     return v
 
 def intersect_triangle(ray, v0, v1, v2, camera, cor, vt0, vt1, vt2, text: textura.Textura):
-    '''
-    TROQUEI UMA FUNÇÃO POR UMA MAIS FÁCIL DE ENTENDER
+    '''''FUNÇÃO DADA NO LIVRO PRA CALCULAR A INTERSECÇÃO COM O TRIANGULO'''''
+    a = v0[0] - v1[0]
+    b = v0[0] - v2[0]
+    c = ray[0]
+    d = v0[0] - camera[0]
+
+    e = v0[1] - v1[1]
+    f = v0[1] - v2[1]
+    g = ray[1]
+    h = v0[1] - camera[1]
+
+    i = v0[2] - v1[2]
+    j = v0[2] - v2[2]
+    k = ray[2]
+    l = v0[2] - camera[2]
+
+    m = f*k - g*j
+    n = h*k - g*l
+    p = f*l - h*j
+
+    q = g*i - e*k
+    s = e*j - f*i
+######################################
+    #evita divisão por 0
+    div0 = a*m + b*q + c*s
+    if div0 == 0:
+        inv_denom = 0
+    else:
+        inv_denom = 1/div0
     
-    Basicamente, calcula o ponto de intersecção do raio com o plano do triângulo
-    Então, verifica suas coordenadas baricentricas com relação a v0, v1 e v2
-    Se tiver dentro, então, aplica a textura relativa com base em vt0, vt1 e vt2
-    
-    Também verifica se o parâmetro do raio é menor que 1, embora seja desnecessário
-    
-    Consegui piorar a performance disso MUITO! ahhahahahahahah
-    '''
-    
-    # TODO: performance disso está muito ruim
-    
-    normal = np.cross(v0-v1, v0-v2)
-    
-    # Restrições: se o triangulo for degenerado ou se o raio for paralelo ao triangulo
-    if np.linalg.norm(normal) < 0.01 or abs(np.dot(normal, ray)) < 0.01:
+    e1 = d*m - b*n - c*p
+    beta = e1*inv_denom
+    if beta < 0:
         return (INF, None)
     
-    A = np.array([
-        [v0[0], v1[0], v2[0], -ray[0]], 
-        [v0[1], v1[1], v2[1], -ray[1]], 
-        [v0[2], v1[2], v2[2], -ray[2]],
-        [1, 1, 1, 0]
-    ])
-    b = np.array([camera[0], camera[1], camera[2], 1])
-    res = np.linalg.solve(A, b)
-    alpha = res[0]
-    beta = res[1]
-    gama = res[2]
-    d = res[3]
+    r = e*l - h*i
+    e2 = a*n + d*q + c*r
+    gamma = e2 * inv_denom
+    if gamma < 0:
+        return (INF, None) 
+    if beta + gamma > 1:
+        return (INF, None)
     
-    # Restrições, ponto fora do triangulo ou antes da tela
-    if alpha > 1 or alpha < 0 or \
-        beta > 1 or beta < 0 or \
-        gama > 1 or gama < 0 or \
-        d < 1:
-            return (INF, None)
+    e3 = a*p - b*r + d*s
+    t = e3 * inv_denom
+    if t< 0.01:
+        return (INF, None)
     
-    
-    # P = alpha*v0 + beta*v1 + gama*v2
     
     # Determina a cor
+    alpha = 1 - beta - gamma
+    # P = alpha*v0 + beta*v1 + gama*v2
     if type(vt0) is not np.ndarray and vt0 == None:
         cor_res = cor
     else:
         # Encontrar o pixel correspondente na textura
-        Ptextura = alpha*vt0 + beta*vt1 + gama*vt2
+        Ptextura = alpha*vt0 + beta*vt1 + gamma*vt2
         cor_res = text.map(Ptextura[0], Ptextura[1])
     
 ######################################
     
-    return (d, cor_res)
+    return (t, cor_res)
 
 def collor(camera, vetor_atual, objetos):
     ''''' FUNÇÃO PARA CALCULAR A COR DE CADA OBJETO COM BASE NA MENOR DISTANCIA DA CAMERA '''''
