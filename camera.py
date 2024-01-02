@@ -2,15 +2,84 @@ import numpy as np
 import cv2 as cv
 import obj
 import textura
+import triangulo
 INF = 9999999999
+
+def test_bounding_box(ponto_reta, vetor_reta, x_max, x_min, y_max, y_min, z_max, z_min):
+    c = ponto_reta
+    r = vetor_reta
+    
+    if r[0] == 0:
+        if c[0] > x_max or c[0] < x_min:
+            return False
+        t1_max = INF
+        t1_min = 0
+    else: 
+        t1_max = (x_max - c[0])/r[0]
+        t1_min = (x_min  - c[0])/r[0]
+        if t1_min > t1_max:
+            (t1_max, t1_min) = (t1_min, t1_max)
+        if t1_max < 1:
+            return False
+    
+    if r[1] == 0:
+        if c[1] > y_max or c[1] < y_min:
+            return False
+        t2_max = INF
+        t2_min = 0
+    else: 
+        t2_max = (y_max - c[1])/r[1]
+        t2_min = (y_min  - c[1])/r[1]
+        if t2_min > t2_max:
+            (t2_max, t2_min) = (t2_min, t2_max)
+        if t2_max < 1:
+            return False
+    
+    if r[2] == 0:
+        if c[2] > z_max or c[2] < z_min:
+            return False
+        t3_max = INF
+        t3_min = 0
+    else: 
+        t3_max = (z_max - c[2])/r[2]
+        t3_min = (z_min  - c[2])/r[2]
+        if t3_min > t3_max:
+            (t3_max, t3_min) = (t3_min, t3_max)
+        if t3_max < 1:
+            return False
+        
+    t_min = max(t1_min, t2_min, t3_min)
+    t_max = min(t1_max, t2_max, t3_max)
+    
+    return t_max >= t_min and t_max >= 1
+        
 
 def normalize(v):
     ''''' NORMALIZAÇÃO DE VETOR (NÃO TEM NO NUMPY) '''''
     v = v/np.linalg.norm(v)
     return v
 
-def intersect_triangle(ray, v0, v1, v2, camera, cor, vt0, vt1, vt2, text: textura.Textura):
+def intersect_triangle(ray, camera, triangulo_: triangulo.Triangulo):
     '''''FUNÇÃO DADA NO LIVRO PRA CALCULAR A INTERSECÇÃO COM O TRIANGULO'''''
+    v0 = triangulo_[2]
+    v1 = triangulo_[3]
+    v2 = triangulo_[4]
+    cor = triangulo_[1]
+    vt0 = triangulo_[6]
+    vt1 = triangulo_[7]
+    vt2 = triangulo_[8]
+    text = triangulo_[9]
+    # Faz o teste de bounding box, para economizar processamento
+    # Tá muito lento
+    x_max = triangulo_.x_max
+    x_min = triangulo_.x_min
+    y_max = triangulo_.y_max
+    y_min = triangulo_.y_min
+    z_max = triangulo_.z_max
+    z_min = triangulo_.z_min
+    if not test_bounding_box(camera, ray, x_max, x_min, y_max, y_min, z_max, z_min):
+        return (INF, None)
+    
     a = v0[0] - v1[0]
     b = v0[0] - v2[0]
     c = ray[0]
@@ -122,7 +191,7 @@ def collor(camera, vetor_atual, objetos):
             tmp = np.dot(i[5],vetor_atual)
             if tmp == 0:
                 continue
-            (current, cor_t)= intersect_triangle(vetor_atual, i[2], i[3], i[4], camera, i[1], i[6], i[7], i[8], i[9])
+            (current, cor_t)= intersect_triangle(vetor_atual, camera, i)
         # pega o menor tempo e joga em T
         if current < T:
             T = current
@@ -227,9 +296,9 @@ def adcionar_triangulo(cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text: t
     p2 = np.array(p2)
     p3 = np.array(p3)
     # calculo do vetor normal ao triangulo
-    v0 = p2 - p1
-    v1 = p3 - p1
-    vetor = normalize(np.cross(v0,v1))
+    # v0 = p2 - p1
+    # v1 = p3 - p1
+    # vetor = normalize(np.cross(v0,v1))
 
     if t1 and t2 and t3 and text:
         t1 = np.array(t1)
@@ -241,7 +310,8 @@ def adcionar_triangulo(cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text: t
         t3 = None
         text = None
     
-    objetos.append(["triangulo", np.array(cor), p1, p2, p3, vetor, t1, t2, t3, text])
+    #objetos.append(["triangulo", np.array(cor), p1, p2, p3, vetor, t1, t2, t3, text])
+    objetos.append(triangulo.Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text))
 #################################################################################
 ''''' INICIALIZAÇÃO DO QUE É NECESSÁRIO PARA O RAYCASTING/RAYTRACING '''''
 camera = np.array([0,0,0])
@@ -270,8 +340,8 @@ objetos = []
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
-#adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
-#adcionar_triangulo((255,0,0), translacao([4,0,1], 1, 2, 1), translacao([4,0,-1],1,2,1), translacao([4,1,0],1,2,1))
+adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
+adcionar_triangulo((255,0,0), translacao((4,0,1), 1, 2, 1), translacao((4,0,-1),1,2,1), translacao((4,1,0),1,2,1))
 #adcionar_plano((0,255,0), (4,0,-1), (4,1,0))
 #adcionar_plano((255,0,0), rotacao_z([4,0,-1],30), rotacao_z([4,1,0],30))
 #adcionar_plano(
@@ -284,26 +354,26 @@ objetos = []
 #     rotacao_z((4,0,-1), 15),
 #     rotacao_z((3,2,0), 15)
 # )
-# adcionar_triangulo(
-#     (127, 0, 255),
-#     rotacao_z((4,0,-1), 15),
-#     rotacao_z((4,0,1), 15),
-#     rotacao_z((4,1,0), 15)
-# )
+adcionar_triangulo(
+    (127, 0, 255),
+    rotacao_z((4,0,-1), 15),
+    rotacao_z((4,0,1), 15),
+    rotacao_z((4,1,0), 15)
+)
 
 # ROSA PINK (127, 0, 255)
 # BEGE (152,186, 213)
 
 textura_quadrado = textura.Textura("square.texture.jpg")
 
-# quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
-# for triangulo in quadrado:
-#     adcionar_triangulo(*triangulo, textura_quadrado)
+quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
+for triangulo_ in quadrado:
+    adcionar_triangulo(*triangulo_, textura_quadrado)
 
 
 cubo = obj.read_obj("cube2.obj", (50,140,70), texture_on=True)
-for triangulo in cubo:
-    adcionar_triangulo(*triangulo, textura_quadrado)
+for triangulo_ in cubo:
+    adcionar_triangulo(*triangulo_, textura_quadrado)
     
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
@@ -311,7 +381,8 @@ for i in range(hres):
     for j in range(vres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
-
+    print(f"{'{:.2f}'.format(i*100/hres)}%", end='\r')
+print("100.00%", end='\r')
 cv.imshow("grupo06 - ANTES", imagem)
 
 # LIMPAR
