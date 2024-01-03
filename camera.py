@@ -3,6 +3,7 @@ import cv2 as cv
 import obj
 import textura
 import triangulo
+import bezier
 INF = 9999999999
 
 def test_bounding_box(ponto_reta, vetor_reta, x_max, x_min, y_max, y_min, z_max, z_min):
@@ -354,8 +355,8 @@ objetos = []
 #adcionar_triangulo(cor, ponto1,ponto2,ponto3)
 #adcionar_esfera(cor,raio,centro)
 #adcionar_plano(cor, ponto, vetor_normal)
-adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
-adcionar_triangulo((255,0,0), translacao((4,0,1), 1, 2, 1), translacao((4,0,-1),1,2,1), translacao((4,1,0),1,2,1))
+# adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
+# adcionar_triangulo((255,0,0), translacao((4,0,1), 1, 2, 1), translacao((4,0,-1),1,2,1), translacao((4,1,0),1,2,1))
 #adcionar_plano((0,255,0), (4,0,-1), (4,1,0))
 #adcionar_plano((255,0,0), rotacao_z([4,0,-1],30), rotacao_z([4,1,0],30))
 #adcionar_plano(
@@ -368,28 +369,33 @@ adcionar_triangulo((255,0,0), translacao((4,0,1), 1, 2, 1), translacao((4,0,-1),
 #     rotacao_z((4,0,-1), 15),
 #     rotacao_z((3,2,0), 15)
 # )
-adcionar_triangulo(
-    (127, 0, 255),
-    rotacao_z((4,0,-1), 15),
-    rotacao_z((4,0,1), 15),
-    rotacao_z((4,1,0), 15)
-)
+# adcionar_triangulo(
+#     (127, 0, 255),
+#     rotacao_z((4,0,-1), 15),
+#     rotacao_z((4,0,1), 15),
+#     rotacao_z((4,1,0), 15)
+# )
 
 # ROSA PINK (127, 0, 255)
 # BEGE (152,186, 213)
 
 textura_quadrado = textura.Textura("square.texture.jpg")
 
-quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
-for triangulo_ in quadrado:
-    adcionar_triangulo(*triangulo_, textura_quadrado)
+# quadrado = obj.read_obj("square.obj", (126,126,126), texture_on=True)
+# for triangulo_ in quadrado:
+#     adcionar_triangulo(*triangulo_, textura_quadrado)
 
 
-cubo = obj.read_obj("cube2.obj", (50,140,70), texture_on=True)
-cubo_objeto = triangulo.Objeto()
-for triangulo_ in cubo:
-    cubo_objeto.adcionar_triangulo(*triangulo_, textura_quadrado)
-objetos.append(cubo_objeto)
+# cubo = obj.read_obj("cube2.obj", (50,140,70), texture_on=True)
+# cubo_objeto = triangulo.Objeto()
+# for triangulo_ in cubo:
+#     cubo_objeto.adcionar_triangulo(*triangulo_, textura_quadrado)
+# objetos.append(cubo_objeto)
+
+## CURVA DE BEZIER
+bez = bezier.BezierCurve(2, 2, [(4,1,3),(4,5,0),(4,3,0)], [(4,1,1),(4,4,1),(4,3,-4)], [(4,1,2),(4,0,2),(4,3,2)])
+malha = bez.criar_malha(resolucao=12)
+objetos.append(malha)
     
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
