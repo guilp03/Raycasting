@@ -1,6 +1,6 @@
+'''DEFINIÇÂO DOS OBJETOS E FUNÇÕES AUXILIARES'''
 import numpy as np
 # import textura
-import triangulo
 INF = 9999999999
 def normalize(v):
     ''''' NORMALIZAÇÃO DE VETOR (NÃO TEM NO NUMPY) '''''
@@ -66,6 +66,29 @@ class Triangulo:
                 return self.t3
             case 9:
                 return self.text
+
+class Esfera:
+    cor: np.ndarray
+    raio: float
+    centro: np.ndarray
+    
+    def __init__(self, cor, raio, centro):
+        self.cor = cor
+        self.raio = raio
+        self.centro = centro
+    
+    def __getitem__(self, key):
+        ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 
+        match key:
+            case 0:
+                return "esfera"
+            case 1:
+                return self.cor
+            case 2:
+                return self.raio
+            case 3:
+                return self.centro
+                
             
 class Objeto:
     subobjetos: list
@@ -116,5 +139,4 @@ class Objeto:
             t3 = None
             text = None
         
-        #objetos.append(["triangulo", np.array(cor), p1, p2, p3, vetor, t1, t2, t3, text])
-        self.subobjetos.append(triangulo.Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text))
+        self.subobjetos.append(Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text))
