@@ -35,13 +35,15 @@ class Triangulo:
         self.t3 = t3
         self.normal = normalize(np.cross(p2-p1,p3-p1))
         self.text = text
+        self.set_bb()
         
-        self.x_max = max(p1[0], p2[0], p3[0])
-        self.x_min = min(p1[0], p2[0], p3[0])
-        self.y_max = max(p1[1], p2[1], p3[1])
-        self.y_min = min(p1[1], p2[1], p3[1])
-        self.z_max = max(p1[2], p2[2], p3[2])
-        self.z_min = min(p1[2], p2[2], p3[2])
+    def set_bb(self):
+        self.x_max = max(self.p1[0], self.p2[0], self.p3[0])
+        self.x_min = min(self.p1[0], self.p2[0], self.p3[0])
+        self.y_max = max(self.p1[1], self.p2[1], self.p3[1])
+        self.y_min = min(self.p1[1], self.p2[1], self.p3[1])
+        self.z_max = max(self.p1[2], self.p2[2], self.p3[2])
+        self.z_min = min(self.p1[2], self.p2[2], self.p3[2])
         
     def __getitem__(self, key):
         ''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA '''
@@ -72,10 +74,27 @@ class Esfera:
     raio: float
     centro: np.ndarray
     
+    x_max: float
+    x_min: float
+    y_max: float
+    y_min: float
+    z_max: float
+    z_min: float
+        
+    def set_bb(self):
+        self.x_max = self.centro[0] + self.raio
+        self.x_min = self.centro[0] - self.raio
+        self.y_max = self.centro[1] + self.raio
+        self.y_min = self.centro[1] - self.raio
+        self.z_max = self.centro[2] + self.raio
+        self.z_min = self.centro[2] - self.raio
+    
     def __init__(self, cor, raio, centro):
         self.cor = cor
         self.raio = raio
         self.centro = centro
+        
+        self.set_bb()
     
     def __getitem__(self, key):
         ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 

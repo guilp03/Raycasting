@@ -67,8 +67,8 @@ def intersect_triangle(ray, camera, triangulo_: objeto.Triangulo):
     vt1 = triangulo_[7]
     vt2 = triangulo_[8]
     text = triangulo_[9]
+    
     # Faz o teste de bounding box, para economizar processamento
-    # Tá muito lento
     x_max = triangulo_.x_max
     x_min = triangulo_.x_min
     y_max = triangulo_.y_max
@@ -131,6 +131,18 @@ def intersect_triangle(ray, camera, triangulo_: objeto.Triangulo):
 
 def intersect_esfera(ray, camera, esfera_: objeto.Esfera):
     '''''INTERSECÇÃO COM A ESFERA'''''
+    
+    # Faz o teste de bounding box, para economizar processamento
+    x_max = esfera_.x_max
+    x_min = esfera_.x_min
+    y_max = esfera_.y_max
+    y_min = esfera_.y_min
+    z_max = esfera_.z_max
+    z_min = esfera_.z_min
+    if not test_bounding_box(camera, ray, x_max, x_min, y_max, y_min, z_max, z_min):
+        return None
+    
+    
     cor = esfera_.cor
     oc = camera - esfera_.centro
     a = np.dot(ray, ray)
