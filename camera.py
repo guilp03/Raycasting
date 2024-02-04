@@ -178,6 +178,20 @@ def collor(camera, vetor_atual, objetos):
             if tmp == 0:
                 continue
             (current, cor_t) = intersect_triangle(vetor_atual, camera, i)
+        elif i[0] == "objeto":
+            '''Intersecção com objeto'''
+            # Verifica bouding box
+            x_max = i.x_max
+            x_min = i.x_min
+            y_max = i.y_max
+            y_min = i.y_min
+            z_max = i.z_max
+            z_min = i.z_min
+            if not test_bounding_box(camera, vetor_atual, x_max, x_min, y_max, y_min, z_max, z_min):
+                continue
+            
+            # Verifica intersecção com os subobjetos
+            (current, cor_t) = collor(camera, vetor_atual, i.subobjetos)
         # pega o menor tempo e joga em T
         if current < t:
             t = current
@@ -342,9 +356,10 @@ for triangulo_ in quadrado:
 
 
 cubo = obj.read_obj("cube.obj", (50,160,50))
-
+cubo_objeto = triangulo.Objeto()
 for triangulo_ in cubo:
-    adcionar_triangulo(*triangulo_)
+    cubo_objeto.adcionar_triangulo(*triangulo_)
+objetos.append(cubo_objeto)
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
@@ -360,24 +375,24 @@ objetos = []
 
 ## EXEMPLOS APÓS TRANSFORMAÇÃO
     
-for triangulo_ in cubo:
-    cor = triangulo_[0]
-    pontos = (triangulo_[1], triangulo_[2], triangulo_[3])
-    pontos = tuple(map(lambda x: translacao(x, -4, 0, 0), pontos))
-    pontos = tuple(map(lambda x: expandir(x, 2), pontos))
-    pontos = tuple(map(lambda x: rotacao_x(x, 20), pontos))
-    pontos = tuple(map(lambda x: rotacao_y(x, 20), pontos))
-    pontos = tuple(map(lambda x: rotacao_z(x, 20), pontos))
-    pontos = tuple(map(lambda x: translacao(x, 4, 0, 0), pontos))
+# for triangulo_ in cubo:
+#     cor = triangulo_[0]
+#     pontos = (triangulo_[1], triangulo_[2], triangulo_[3])
+#     pontos = tuple(map(lambda x: translacao(x, -4, 0, 0), pontos))
+#     pontos = tuple(map(lambda x: expandir(x, 2), pontos))
+#     pontos = tuple(map(lambda x: rotacao_x(x, 20), pontos))
+#     pontos = tuple(map(lambda x: rotacao_y(x, 20), pontos))
+#     pontos = tuple(map(lambda x: rotacao_z(x, 20), pontos))
+#     pontos = tuple(map(lambda x: translacao(x, 4, 0, 0), pontos))
         
-    adcionar_triangulo(cor, *pontos)
- #for que percorre toda a tela e gera a intesecção com os objetos
-# para gerar a imagem final
-for i in range(hres):
-    for j in range(vres):
-        vetor_atual = vetor_inicial + i*desl_h + j*desl_v
-        imagem[j,i] = collor(camera, vetor_atual, objetos)[1]
+#     adcionar_triangulo(cor, *pontos)
+#  #for que percorre toda a tela e gera a intesecção com os objetos
+# # para gerar a imagem final
+# for i in range(hres):
+#     for j in range(vres):
+#         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
+#         imagem[j,i] = collor(camera, vetor_atual, objetos)[1]
 
-cv.imshow("grupo06 - DEPOIS", imagem)
+# cv.imshow("grupo06 - DEPOIS", imagem)
 cv.waitKey(0)
 cv.destroyWindow('i')
