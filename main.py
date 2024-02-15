@@ -10,7 +10,7 @@ import objeto
 import afim
 INF = 9999999999
 from phong import normalize, collor
-from cena import adcionar_esfera, adcionar_plano, adcionar_triangulo, OBJETOS_LISTA
+from cena import adcionar_esfera, adcionar_plano, adcionar_triangulo, adicionar_luz, OBJETOS_LISTA, LUZES_LISTA
 
 def main():
     ''''' INICIALIZAÇÃO DO QUE É NECESSÁRIO PARA O RAYCASTING/RAYTRACING '''''
@@ -35,10 +35,23 @@ def main():
     vetor_inicial = - w * distancia - u * tam_x - tam_y * v
     #################################################################################
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
+    
+    # Adicionar luz
+    adicionar_luz(objeto.Luz((5,0,0), (255,255,255), (0,0,0)))
 
     quadrado = readobj.read_obj("square.obj", (126,126,126))
     for triangulo_ in quadrado:
-        adcionar_triangulo(*triangulo_)
+        adcionar_triangulo(
+            *triangulo_, 
+            _material = objeto.Material(
+                kd=(0.5,0.5,0.5),
+                ke=(0.5,0.5,0.5),
+                ka=(0.5,0.5,0.5),
+                kr=(0.5,0.5,0.5),
+                kt = (0.5,0.5,0.5),
+                n = 1
+                )
+            )
 
 
     cubo = readobj.read_obj("cube.obj", (50,160,50))
@@ -55,6 +68,8 @@ def main():
         for j in range(vres):
             vetor_atual = vetor_inicial + i*desl_h + j*desl_v
             imagem[j,i] = collor(camera, vetor_atual, OBJETOS_LISTA)[1]
+            print(f"{'{:.2f}'.format(i*100/hres)}%", end='\r')
+    print("100.00%", end='\r')
 
     cv.imshow("grupo06", imagem)
 

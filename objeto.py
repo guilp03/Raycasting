@@ -7,16 +7,43 @@ def normalize(v):
     v = v/np.linalg.norm(v)
     return v
 
+class Luz:
+    ponto: np.ndarray # R³
+    intensidade: np.ndarray # [0,255]³
+    cor_ambiente: np.ndarray # [0,255]³
+    
+    def __init__(self, ponto, intensidade, cor_ambiente):
+        self.ponto = np.array(ponto)
+        self.intensidade = np.array(intensidade)
+        self.cor_ambiente = np.array(cor_ambiente)
+
+class Material:
+    k_difuso: np.ndarray # [0,1]³
+    k_especular: np.ndarray # [0,1]³
+    k_ambiental: np.ndarray # [0,1]³
+    k_reflexão: np.ndarray # [0,1]³
+    k_transmissão: np.ndarray # [0,1]³
+    k_rugosidade: float # > 0
+    
+    def __init__(self, kd, ke, ka = np.array((1,1,1)), kr = None, kt = None, n: float = 0.0):
+        self.k_difuso = np.array(kd)
+        self.k_especular = np.array(ke)
+        self.k_ambiental = np.array(ka)
+        self.k_reflexão = np.array(kr)
+        self.k_transmissão = np.array(kt)
+        self.k_rugosidade = n
+
 class Triangulo:
-    p1: np.ndarray
-    p2: np.ndarray
-    p3: np.ndarray
-    cor: np.ndarray
-    normal: np.ndarray
-    t1: np.ndarray
-    t2: np.ndarray
-    t3: np.ndarray
-    text: None#textura.Textura
+    p1: np.ndarray # R³
+    p2: np.ndarray # R³
+    p3: np.ndarray # R³
+    cor: np.ndarray # [0,255]³
+    normal: np.ndarray # R³ normalizado
+    t1: np.ndarray # R³
+    t2: np.ndarray # R³
+    t3: np.ndarray # R³
+    text: None #textura.Textura
+    material: Material
     
     x_max: float
     x_min: float
@@ -25,7 +52,7 @@ class Triangulo:
     z_max: float
     z_min: float
     
-    def __init__(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None) -> None:
+    def __init__(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None, material = None) -> None:
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3
@@ -36,6 +63,7 @@ class Triangulo:
         self.normal = normalize(np.cross(p2-p1,p3-p1))
         self.text = text
         self.set_bb()
+        self.material = material
         
     def set_bb(self):
         self.x_max = max(self.p1[0], self.p2[0], self.p3[0])
@@ -46,7 +74,7 @@ class Triangulo:
         self.z_min = min(self.p1[2], self.p2[2], self.p3[2])
         
     def __getitem__(self, key):
-        ''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA '''
+        ''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA | 10 = MATERIAL '''
         match key:
             case 0:
                 return "triangulo"
@@ -68,11 +96,14 @@ class Triangulo:
                 return self.t3
             case 9:
                 return self.text
+            case 10: 
+                return self.material
 
 class Esfera:
-    cor: np.ndarray
+    cor: np.ndarray # [0,255]³
     raio: float
-    centro: np.ndarray
+    centro: np.ndarray # R³
+    material: Material
     
     x_max: float
     x_min: float
@@ -89,15 +120,16 @@ class Esfera:
         self.z_max = self.centro[2] + self.raio
         self.z_min = self.centro[2] - self.raio
     
-    def __init__(self, cor, raio, centro):
+    def __init__(self, cor, raio, centro, material = None):
         self.cor = cor
         self.raio = raio
         self.centro = centro
+        self.material = material
         
         self.set_bb()
     
     def __getitem__(self, key):
-        ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 
+        ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO | 10 = MATERIAL ''''' 
         match key:
             case 0:
                 return "esfera"
@@ -107,17 +139,20 @@ class Esfera:
                 return self.raio
             case 3:
                 return self.centro
+            case 10:
+                return self.material
                 
             
 class Objeto:
     subobjetos: list
+    material: Material
     x_max: float
     x_min: float
     y_max: float
     y_min: float
     z_max: float
     z_min: float
-    def __init__(self) -> None:
+    def __init__(self, material = None) -> None:
         self.subobjetos = []
         self.x_max = -INF
         self.x_min = INF
@@ -125,6 +160,7 @@ class Objeto:
         self.y_min = INF
         self.z_max = -INF
         self.z_min = INF
+        self.material = material
         
     def __getitem__(self, key):
         ''' 0 = TIPO '''
@@ -133,9 +169,11 @@ class Objeto:
                 return "objeto"
             case 1:
                 return np.array((0,0,0))
+            case 10:
+                return self.material
             
-    def adcionar_triangulo(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None):
-        ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA '''''
+    def adcionar_triangulo(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None, mat = None):
+        ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA | 10 = MATERIAL '''''
         # transforma os pontos em array
         p1 = np.array(p1)
         p2 = np.array(p2)
@@ -157,5 +195,6 @@ class Objeto:
             t2 = None
             t3 = None
             text = None
-        
-        self.subobjetos.append(Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text))
+        if self.material is not None and mat is None:
+            mat = self.material
+        self.subobjetos.append(Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text, material=mat))

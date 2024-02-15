@@ -1,7 +1,10 @@
 '''FUNÇÕES REFERENTES AO MODELO DE ILUMINAÇÃO'''
 import numpy as np
 import objeto
+from objeto import Luz, Material
+from typing import Tuple, Any
 INF = 9999999999
+#Coeficiente_difuso = np.array((0.5,0.5,0.5))
 
 def test_bounding_box(ponto_reta, vetor_reta, x_max, x_min, y_max, y_min, z_max, z_min):
     c = ponto_reta
@@ -171,11 +174,14 @@ def intersect_esfera(ray, camera, esfera_: objeto.Esfera):
     else:
         return (tmp2, cor)
 
-def collor(camera, vetor_atual, objetos):
+def collor(camera, vetor_atual, objetos, return_obj = False):
     ''''' FUNÇÃO PARA CALCULAR A COR DE CADA OBJETO COM BASE NA MENOR DISTANCIA DA CAMERA '''''
     t = INF
     cor = np.array([0,0,0])
+    collor_obj = None
     for i in objetos:
+        current = INF
+        current_obj = i
         cor_t = i[1]
         if i[0].lower() == "esfera":
             '''''INTERSECÇÃO COM A ESFERA'''''
@@ -213,9 +219,37 @@ def collor(camera, vetor_atual, objetos):
                 continue
             
             # Verifica intersecção com os subobjetos
-            (current, cor_t) = collor(camera, vetor_atual, i.subobjetos)
+            (current, cor_t, current_obj) = collor(camera, vetor_atual, i.subobjetos, return_obj)
         # pega o menor tempo e joga em T
         if current < t:
             t = current
             cor = cor_t
-    return (t, cor)
+            collor_obj = current_obj
+    if return_obj:
+        return(t, cor, collor_obj)
+    return (t, cor, None)
+
+def phong_no_recursion(camera, vetor_atual, objetos, luzes):
+    '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG SEM RECURSÃO'''
+    pass
+    # TODO: fazer algoritmo com o grupo
+    # Detecta o objeto de colisão:
+    # (t, cor, obj): Tuple[float, np.ndarray, Any] = collor(camera, vetor_atual, objetos, True)
+    # if obj == None:
+    #     return np.array([0,0,0]) # cor de fundo
+    
+    # # Informações necessárias:
+    #     # Ponto de contato do raio com o objeto
+    #     # normal no ponto da superfície do objeto onde a interseção ocorreu
+    #     # Vetores apontando do ponto de contato para as luzes +
+    #         # Vetor de reflexão em relação a luz 
+    #         # Vetor que aponta para o espectador. Podem haver diferentes espectadores que a câmera no caso de reflexões e refrações
+    # iluminacao = np.array((0,0,0))
+    # for luz in luzes:
+    #     luz: Luz = luz
+    #     mat: Material = obj.material
+    #     iluminacao_ambiente = np.multiply(mat.k_ambiental,  luz.cor_ambiente)
+        
+    #     iluminacao += iluminacao_ambiente # + iluminacao difusa e especular
+    
+    # cor_final = np.multiply(iluminacao, cor)/255
