@@ -8,6 +8,24 @@ def normalize(v):
     v = v/np.linalg.norm(v)
     return v
 
+def phong(objeto, lista_luzes, ponto_intersec, n_ponto, camera):
+    lamb = objeto.ka * np.array([255,255,255])
+    for luz in lista_luzes:
+        objeto_luz = ponto_intersec - luz.ponto
+        
+        # COMPONENTE DIFUSA
+        cosln = np.dot(n_ponto, objeto_luz)
+        difusa = luz.intensidade * objeto.cor * objeto.kd * cosln
+        
+        # COMPONENTE ESPECULAR
+        vetor_refletido = 2*n_ponto * np.dot(n_ponto, objeto_luz) - objeto_luz
+        vetor_observador = ponto_intersec - camera
+        cosrvq = np.dot(vetor_refletido, vetor_observador)**objeto.q
+        especular = luz.intensidade * objeto.ks * cosrvq
+
+        de = np.add(difusa, especular)
+        return np.add(de, lamb)
+    
 def intersect_triangle(ray, v0, v1, v2, camera):
     '''''FUNÇÃO DADA NO LIVRO PRA CALCULAR A INTERSECÇÃO COM O TRIANGULO'''''
     a = v0[0] - v1[0]
@@ -60,59 +78,64 @@ def intersect_triangle(ray, v0, v1, v2, camera):
     return t
 
 def collor(camera, vetor_atual, objetos):
-    ''''' FUNÇÃO PARA CALCULAR A COR DE CADA OBJETO COM BASE NA MENOR DISTANCIA DA CAMERA '''''
     T = INF
+    current_obj = None
+    n_ponto = None
     cor = np.array([0,0,0])
-    for i in objetos:
-        if i[0].lower() == "esfera":
-            '''''INTERSECÇÃO COM A ESFERA'''''
-            oc = camera - i[3]
+    for objeto in objetos:
+        if isinstance(objeto, Esfera):
+            oc = camera - objeto.centro
             a = np.dot(vetor_atual, vetor_atual)
             b = 2 * np.dot(oc, vetor_atual)
-            c = np.dot(oc, oc) - (i[2] ** 2)
+            c = np.dot(oc, oc) - (objeto.raio ** 2)
             delta = b ** 2 - (4 * a * c)
-
             if delta < 0:
                 continue
-            # ENCONTRA OS PONTOS DE INTERSECÇÃO COM BHASKARA
             tmp1 = (-b + np.sqrt(delta))/(2*a)
             tmp2 = (-b - np.sqrt(delta))/(2*a)
-            # tratamento de exceções
             if tmp1 < 0 and tmp2 < 0:
                 continue
             if tmp1 < 0.01:
                 tmp1 = INF
             if tmp2 < 0.01:
                 tmp2 = INF
-            # current recebe a menor distancia
             if tmp1 < tmp2:
                 current = tmp1
             else:
                 current = tmp2   
+            
+            n_ponto 
 
-        elif i[0].lower() == "plano":
-            '''''INTERSECÇÃO COM O PLANO'''''
-            #verifica se o plano não é paralelo com os raios da camera
-            tmp = np.dot(i[3],vetor_atual)
+        elif isinstance(objeto, Plano):
+            tmp = np.dot(objeto.vetor_normal, vetor_atual)
             if tmp == 0:
                 continue
-            #calcula a intersecção dos pontos
-            current = (np.dot(i[3], i[2]) - np.dot(i[3], camera)) / tmp
+            current = (np.dot(objeto.vetor_normal, objeto.ponto) - np.dot(objeto.vetor_normal, camera)) / tmp
             if current < 0.01:
                 current = INF
         
-        elif i[0].lower() == "triangulo":
-            '''''INTERSECÇÃO COM O TRIANGULO'''
-            #verifica se o raio não é paralelo com o triangulo
-            tmp = np.dot(i[5],vetor_atual)
+        elif isinstance(objeto, Triangulo):
+            tmp = np.dot(objeto.vetor_normal, vetor_atual)
             if tmp == 0:
                 continue
-            current = intersect_triangle(vetor_atual, i[2], i[3], i[4], camera)
-        # pega o menor tempo e joga em T
+            current = intersect_triangle(vetor_atual, objeto.p1, objeto.p2, objeto.p3, camera)
+        
         if current < T:
             T = current
-            cor = i[1]
-    return cor
+            current_obj = objeto
+    if T == INF:
+        return cor
+    else:
+        x = camera[0] + vetor_atual * T
+        y = camera[1] + vetor_atual * T
+        z = camera[2] + vetor_atual * T
+        ponto_intersec = np.array([x,y,z])
+        if isinstance (current_obj, Esfera):
+            n_ponto = ponto_intersec - current_obj.centro
+        elif isinstance (current_obj,Triangulo) or isinstance (current_obj,Plano):
+            n_ponto = current_obj.vetor_normal 
+        phong_v = phong(current_obj, fonte_luz, ponto_intersec, n_ponto, camera)
+        return phong_v
 
 '''FUNÇÃO PARA RETIRAR O NP.ARRAY, FACILITANDO COMPOSIÇÃO DE TRANSFORMAÇÕES'''
 def nparray_para_tuple(vetor):
@@ -122,7 +145,7 @@ def nparray_para_tuple(vetor):
         return vetor
 
 '''DEFININDO MATRIZES DE ROTAÇÃO E REFLEXÃO'''
-def translacao (ponto, p1,p2,p3):
+def translacao(ponto, p1,p2,p3):
     ponto = ponto + (1,)
     ponto = np.array(ponto)
     matriz_translacao = np.array([
@@ -192,31 +215,44 @@ def expandir(ponto, t):
     value = np.delete(value, 3)
     return nparray_para_tuple(value)
 
-#################################################################################
-'''''FUNÇÕES PARA ADICIONAR OBJETOS'''''
-# att: futuramente vai ser melhor criar uma classe pra cada
-def adcionar_plano(cor, ponto, vetor):
-    ''''' 0 = TIPO | 1 = COR |  2 = PONTO | 3 = VETOR_NORMAL '''''
+class Plano:
+    def __init__(self, cor, ponto, vetor, kd, ks, ka, q):
+        self.tipo = "plano"
+        self.cor = np.array(cor)
+        self.ponto = np.array(ponto)
+        self.vetor_normal = np.array(vetor)
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.q = q
 
-    objetos.append(["plano", np.array(cor), np.array(ponto), np.array(vetor)])
+class Triangulo:
+    def __init__(self, cor, p1, p2, p3, kd, ks, ka, q):
+        self.tipo = "triangulo"
+        self.cor = np.array(cor)
+        self.p1 = np.array(p1)
+        self.p2 = np.array(p2)
+        self.p3 = np.array(p3)
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.q = q
+        # cálculo do vetor normal ao triângulo
+        v0 = self.p2 - self.p1
+        v1 = self.p3 - self.p1
+        self.vetor_normal = self.normalize(np.cross(v0, v1))
 
-def adcionar_esfera(raio, ponto, cor):
-    ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 
+class Esfera:
+    def __init__(self, raio, ponto, cor, kd, ks, ka, q):
+        self.tipo = "esfera"
+        self.cor = np.array(cor)
+        self.raio = raio
+        self.centro = np.array(ponto)
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.q = q
 
-    objetos.append(["esfera", np.array(cor), raio, np.array(ponto)])
-
-def adcionar_triangulo(cor, p1, p2, p3):
-    ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL '''''
-    # transforma os pontos em array
-    p1 = np.array(p1)
-    p2 = np.array(p2)
-    p3 = np.array(p3)
-    # calculo do vetor normal ao triangulo
-    v0 = p2 - p1
-    v1 = p3 - p1
-    vetor = normalize(np.cross(v0,v1))
-
-    objetos.append(["triangulo", np.array(cor), p1, p2, p3, vetor])
 #################################################################################
 ''''' INICIALIZAÇÃO DO QUE É NECESSÁRIO PARA O RAYCASTING/RAYTRACING '''''
 camera = np.array([0,0,0])
@@ -238,46 +274,33 @@ desl_h = ((2*tam_x)/(hres-1)) * u
 desl_v = ((2*tam_y)/(vres-1)) * v
 # vetor no incio da tela
 vetor_inicial = w * distancia - u * tam_x - tam_y * v
+''''' ADICIONANDO FONTES DE LUZ '''''
+n = int(input("QUANTIDADE DE FONTES DE LUZ"))
+intensidade_ambiente = np.array([255,255,255])
+fonte_luz = []
+
+class Fonte_Luz:
+    def __init__ (self, x,y,z,i1,i2,i3):
+        self.ponto = np.array([x,y,z])
+        self.intensidade = np.array([i1,i2,i3])
+
+for i in range(n):
+    print("LUZ")
+    x = int(input())
+    y = int(input())
+    z = int(input())
+    i1 = int(input())
+    i2 = int(input())
+    i3 = int(input())
+    fonte_luz.append(Fonte_Luz(x,y,z,i1,i2,i3))
+
 #################################################################################
 ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
 objetos = []
-## EXEMPLOS
-#adcionar_triangulo(cor, ponto1,ponto2,ponto3)
-#adcionar_esfera(cor,raio,centro)
-#adcionar_plano(cor, ponto, vetor_normal)
-#adcionar_triangulo((0,255,0), (4,0,1), (4,0,-1), (4,1,0))
-#adcionar_triangulo((255,0,0), translacao([4,0,1], 1, 2, 1), translacao([4,0,-1],1,2,1), translacao([4,1,0],1,2,1))
-#adcionar_plano((0,255,0), (4,0,-1), (4,1,0))
-#adcionar_plano((255,0,0), rotacao_z([4,0,-1],30), rotacao_z([4,1,0],30))
-#adcionar_plano(
-#    (152,186, 213),
-#    (1,0,-1),
-#    (3,2,0)
-#)
-adcionar_plano(
-    (127, 0, 255),
-    rotacao_z((4,0,-1), 15),
-    rotacao_z((3,2,0), 15)
-)
-adcionar_triangulo(
-    (127, 0, 255),
-    rotacao_z((4,0,-1), 15),
-    rotacao_z((4,0,1), 15),
-    rotacao_z((4,1,0), 15)
-)
-
+objetos.append(Esfera(0.5,[4,0,0],[255,255,255],1,1,1,10))
 # ROSA PINK (127, 0, 255)
 # BEGE (152,186, 213)
 
-quadrado = obj.read_obj("square.obj", (126,126,126))
-for triangulo in quadrado:
-    adcionar_triangulo(*triangulo)
-
-
-cubo = obj.read_obj("cube.obj", (50,160,50))
-
-for triangulo in cubo:
-    adcionar_triangulo(*triangulo)
 # for que percorre toda a tela e gera a intesecção com os objetos
 # para gerar a imagem final
 for i in range(hres):
@@ -285,32 +308,4 @@ for i in range(hres):
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
 
-cv.imshow("grupo06 - ANTES", imagem)
-
-# LIMPAR
-objetos = []
-
-
-## EXEMPLOS APÓS TRANSFORMAÇÃO
-    
-for triangulo in cubo:
-    cor = triangulo[0]
-    pontos = (triangulo[1], triangulo[2], triangulo[3])
-    pontos = tuple(map(lambda x: translacao(x, -4, 0, 0), pontos))
-    pontos = tuple(map(lambda x: expandir(x, 2), pontos))
-    pontos = tuple(map(lambda x: rotacao_x(x, 20), pontos))
-    pontos = tuple(map(lambda x: rotacao_y(x, 20), pontos))
-    pontos = tuple(map(lambda x: rotacao_z(x, 20), pontos))
-    pontos = tuple(map(lambda x: translacao(x, 4, 0, 0), pontos))
-        
-    adcionar_triangulo(cor, *pontos)
- #for que percorre toda a tela e gera a intesecção com os objetos
-# para gerar a imagem final
-for i in range(hres):
-    for j in range(vres):
-        vetor_atual = vetor_inicial + i*desl_h + j*desl_v
-        imagem[j,i] = collor(camera, vetor_atual, objetos)
-
-cv.imshow("grupo06 - DEPOIS", imagem)
-cv.waitKey(0)
-cv.destroyWindow('i')
+cv.imshow("grupo06", imagem)
