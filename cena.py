@@ -3,6 +3,7 @@ import numpy as np
 import objeto
 OBJETOS_LISTA = []
 LUZES_LISTA = []
+COR_AMBIENTE: np.ndarray # [0,255]³
 
 # att: futuramente vai ser melhor criar uma classe pra cada
 def adcionar_plano(cor, ponto, vetor):

@@ -2,7 +2,7 @@
 import numpy as np
 import objeto
 from objeto import Luz, Material
-from typing import Tuple, Any
+import cena
 INF = 9999999999
 #Coeficiente_difuso = np.array((0.5,0.5,0.5))
 
@@ -234,22 +234,31 @@ def phong_no_recursion(camera, vetor_atual, objetos, luzes):
     pass
     # TODO: fazer algoritmo com o grupo
     # Detecta o objeto de colisão:
-    # (t, cor, obj): Tuple[float, np.ndarray, Any] = collor(camera, vetor_atual, objetos, True)
-    # if obj == None:
-    #     return np.array([0,0,0]) # cor de fundo
+    res = collor(camera, vetor_atual, objetos, True)
+    t: float = res[0]
+    cor: np.ndarray = res[1]
+    obj = res[2]
+    if obj == None:
+        return np.array([0,0,0]) # cor de fundo
     
+    mat: Material = obj.material
+    if mat == None:
+        return cor
     # # Informações necessárias:
     #     # Ponto de contato do raio com o objeto
     #     # normal no ponto da superfície do objeto onde a interseção ocorreu
     #     # Vetores apontando do ponto de contato para as luzes +
     #         # Vetor de reflexão em relação a luz 
     #         # Vetor que aponta para o espectador. Podem haver diferentes espectadores que a câmera no caso de reflexões e refrações
-    # iluminacao = np.array((0,0,0))
-    # for luz in luzes:
-    #     luz: Luz = luz
-    #     mat: Material = obj.material
-    #     iluminacao_ambiente = np.multiply(mat.k_ambiental,  luz.cor_ambiente)
-        
-    #     iluminacao += iluminacao_ambiente # + iluminacao difusa e especular
+    iluminacao = np.array((0.0,0.0,0.0))
     
-    # cor_final = np.multiply(iluminacao, cor)/255
+    # Cálculo da parcela de ilumiação ambiente
+    iluminacao_ambiente = np.multiply(mat.k_ambiental,  cena.COR_AMBIENTE)
+    iluminacao += iluminacao_ambiente # + iluminacao difusa e especular
+    
+    # Cálculo da parcela de iluminação difusa e especular
+    for luz in luzes:
+        luz: Luz = luz
+    
+    cor_final = np.multiply(iluminacao, cor)/255 # Não sei o que isso faz direito
+    return cor_final

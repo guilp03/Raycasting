@@ -10,12 +10,10 @@ def normalize(v):
 class Luz:
     ponto: np.ndarray # R³
     intensidade: np.ndarray # [0,255]³
-    cor_ambiente: np.ndarray # [0,255]³
     
-    def __init__(self, ponto, intensidade, cor_ambiente):
+    def __init__(self, ponto, intensidade):
         self.ponto = np.array(ponto)
         self.intensidade = np.array(intensidade)
-        self.cor_ambiente = np.array(cor_ambiente)
 
 class Material:
     k_difuso: np.ndarray # [0,1]³
@@ -172,7 +170,7 @@ class Objeto:
             case 10:
                 return self.material
             
-    def adcionar_triangulo(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None, mat = None):
+    def adcionar_triangulo(self, cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None, _material = None):
         ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL | 6,7,8 = VETOR_TEXTURA | 9 = TEXTURA | 10 = MATERIAL '''''
         # transforma os pontos em array
         p1 = np.array(p1)
@@ -195,6 +193,6 @@ class Objeto:
             t2 = None
             t3 = None
             text = None
-        if self.material is not None and mat is None:
-            mat = self.material
-        self.subobjetos.append(Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text, material=mat))
+        if self.material is not None and _material is None:
+            _material = self.material
+        self.subobjetos.append(Triangulo(np.array(cor),p1,p2,p3,t1,t2,t3,text, material=_material))
