@@ -38,7 +38,7 @@ def main():
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
     
     # Adicionar luz
-    adicionar_luz(objeto.Luz((0.0,1.0,-3.0), (1.0,1.0,1.0)))
+    adicionar_luz(objeto.Luz((0.0,5000.0,0.0), (0.5,0.5,0.5)))
     cena.COR_AMBIENTE = np.array((255,255,255))
 
     quadrado = readobj.read_obj("square.obj", (255,255,255))
@@ -46,7 +46,7 @@ def main():
         adcionar_triangulo(
             *triangulo_, 
             _material = objeto.Material(
-                kd=(1,1,1),
+                kd=(0.0,0.0,0.0),
                 ke=(0.5,0.5,0.5),
                 ka=(0.1,0.1,0.1),
                 kr=(0.5,0.5,0.5),
@@ -62,12 +62,12 @@ def main():
         cubo_objeto.adcionar_triangulo(
             *triangulo_,
             _material = objeto.Material(
-                kd=(1,1,1),
+                kd=(0.0,0.0,0.0),
                 ke=(0.5,0.5,0.5),
                 ka=(0.2,0.1,0.0),
                 kr=(0.5,0.5,0.5),
                 kt = (0.5,0.5,0.5),
-                n = 1,
+                n = 3,
                 od = (160,70,0)
             )
         )
@@ -75,13 +75,13 @@ def main():
 
     adcionar_esfera(0.5, (2,0,0), (255,255,255),
             _material = objeto.Material(
-                kd=(1.0,1.0,1.0),
-                ke=(0.5,0.5,0.5),
+                kd=(0.3,0.45,0.15),
+                ke=(0.4,0.6,0.2),
                 ka=(0.2,0.3,0.1),
                 kr=(0.5,0.5,0.5),
                 kt = (0.5,0.5,0.5),
-                n = 1,
-                od = (160,255,80) 
+                n = 4,
+                od = (255,255,255) 
             )
     )
 

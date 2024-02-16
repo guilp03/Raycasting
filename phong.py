@@ -3,6 +3,7 @@ import numpy as np
 import objeto
 from objeto import Luz, Material
 import cena
+from math import pow
 INF = 9999999999
 #Coeficiente_difuso = np.array((0.5,0.5,0.5))
 
@@ -259,6 +260,9 @@ def phong_no_recursion(camera, vetor_atual, objetos, luzes):
     # Encontra o ponto de colisão do raio
     ponto_objeto = camera + vetor_atual*t
     
+    # Encontra vetor espectador
+    Vetor_espectador = normalize(camera - ponto_objeto)
+    
     # Cálculo da parcela de iluminação difusa e especular
     for luz in luzes:
         luz: Luz = luz
@@ -277,11 +281,19 @@ def phong_no_recursion(camera, vetor_atual, objetos, luzes):
         
         # Componente difusa
         dot = np.dot(normal, Li)
-        if (dot) > 0:
+        if dot > 0:
             dif = luz.intensidade * mat.k_difuso * mat.o_difuso * dot
             iluminacao += dif
         
         # Componente especular
+
+        # Encontrar vetor de reflexão
+        Ri = 2*normal*(np.dot(normal, Li)) - Li
+        dot = np.dot(Ri, Vetor_espectador)
+        if dot > 0:
+            # Esse último np.array serve para colocar a iluminação proporcional a 255
+            esp = luz.intensidade * mat.k_especular * pow(dot, mat.k_rugosidade) * np.array((255.0,255.0,255.0))
+            iluminacao += esp
     
     # Correção de overflow
     for i in range(0,3):
