@@ -217,7 +217,6 @@ def expandir(ponto, t):
 
 class Plano:
     def __init__(self, cor, ponto, vetor, kd, ks, ka, q):
-        self.tipo = "plano"
         self.cor = np.array(cor)
         self.ponto = np.array(ponto)
         self.vetor_normal = np.array(vetor)
@@ -228,7 +227,6 @@ class Plano:
 
 class Triangulo:
     def __init__(self, cor, p1, p2, p3, kd, ks, ka, q):
-        self.tipo = "triangulo"
         self.cor = np.array(cor)
         self.p1 = np.array(p1)
         self.p2 = np.array(p2)
@@ -244,7 +242,6 @@ class Triangulo:
 
 class Esfera:
     def __init__(self, raio, ponto, cor, kd, ks, ka, q):
-        self.tipo = "esfera"
         self.cor = np.array(cor)
         self.raio = raio
         self.centro = np.array(ponto)
