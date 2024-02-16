@@ -38,17 +38,17 @@ def main():
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
     
     # Adicionar luz
-    adicionar_luz(objeto.Luz((5,0,0), (255,255,255)))
+    adicionar_luz(objeto.Luz((0.0,1.0,-3.0), (1.0,1.0,1.0)))
     cena.COR_AMBIENTE = np.array((255,255,255))
 
-    quadrado = readobj.read_obj("square.obj", (126,126,126))
+    quadrado = readobj.read_obj("square.obj", (255,255,255))
     for triangulo_ in quadrado:
         adcionar_triangulo(
             *triangulo_, 
             _material = objeto.Material(
-                kd=(0.5,0.5,0.5),
+                kd=(1,1,1),
                 ke=(0.5,0.5,0.5),
-                ka=(0,0,0),
+                ka=(0.1,0.1,0.1),
                 kr=(0.5,0.5,0.5),
                 kt = (0.5,0.5,0.5),
                 n = 1
@@ -56,30 +56,32 @@ def main():
             )
 
 
-    cubo = readobj.read_obj("cube.obj", (50,160,50))
+    cubo = readobj.read_obj("cube.obj", (255,255,255))
     cubo_objeto = objeto.Objeto()
     for triangulo_ in cubo:
         cubo_objeto.adcionar_triangulo(
             *triangulo_,
             _material = objeto.Material(
-                kd=(0.5,0.5,0.5),
+                kd=(1,1,1),
                 ke=(0.5,0.5,0.5),
-                ka=(0.2,0.4,0.6),
+                ka=(0.2,0.1,0.0),
                 kr=(0.5,0.5,0.5),
                 kt = (0.5,0.5,0.5),
-                n = 1    
+                n = 1,
+                od = (160,70,0)
             )
         )
     OBJETOS_LISTA.append(cubo_objeto)
 
     adcionar_esfera(0.5, (2,0,0), (255,255,255),
             _material = objeto.Material(
-                kd=(0.5,0.5,0.5),
+                kd=(1.0,1.0,1.0),
                 ke=(0.5,0.5,0.5),
-                ka=(0,0,0),
+                ka=(0.2,0.3,0.1),
                 kr=(0.5,0.5,0.5),
                 kt = (0.5,0.5,0.5),
-                n = 1    
+                n = 1,
+                od = (160,255,80) 
             )
     )
 

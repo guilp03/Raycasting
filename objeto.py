@@ -9,7 +9,7 @@ def normalize(v):
 
 class Luz:
     ponto: np.ndarray # R³
-    intensidade: np.ndarray # [0,255]³
+    intensidade: np.ndarray # [0,1]³
     
     def __init__(self, ponto, intensidade):
         self.ponto = np.array(ponto)
@@ -22,14 +22,16 @@ class Material:
     k_reflexão: np.ndarray # [0,1]³
     k_transmissão: np.ndarray # [0,1]³
     k_rugosidade: float # > 0
+    o_difuso: np.ndarray # [0,255]³
     
-    def __init__(self, kd, ke, ka = np.array((1,1,1)), kr = None, kt = None, n: float = 0.0):
+    def __init__(self, kd, ke, ka = (1,1,1), kr = None, kt = None, n: float = 0.0, od = (255,255,255)):
         self.k_difuso = np.array(kd)
         self.k_especular = np.array(ke)
         self.k_ambiental = np.array(ka)
         self.k_reflexão = np.array(kr)
         self.k_transmissão = np.array(kt)
         self.k_rugosidade = n
+        self.o_difuso = np.array(od)
 
 class Triangulo:
     p1: np.ndarray # R³

@@ -256,9 +256,35 @@ def phong_no_recursion(camera, vetor_atual, objetos, luzes):
     iluminacao_ambiente = np.multiply(mat.k_ambiental,  cena.COR_AMBIENTE)
     iluminacao += iluminacao_ambiente # + iluminacao difusa e especular
     
+    # Encontra o ponto de colisão do raio
+    ponto_objeto = camera + vetor_atual*t
+    
     # Cálculo da parcela de iluminação difusa e especular
     for luz in luzes:
         luz: Luz = luz
+        
+        # Vetor que parte do ponto da superfície do objeto onde a interseção ocorreu e aponta para a luz
+        Li = normalize(luz.ponto - ponto_objeto)
+        
+        # Normal no ponto da superfície do objeto onde a interseção ocorreu
+        normal = np.array((0.0,0.0,0.0))
+        match obj[0]:
+            case "triangulo":
+                normal = obj.normal
+            case "esfera":
+                normal = normalize(ponto_objeto - obj.centro)
+        
+        
+        # Componente difusa
+        dot = np.dot(normal, Li)
+        if (dot) > 0:
+            dif = luz.intensidade * mat.k_difuso * mat.o_difuso * dot
+            iluminacao += dif
+        
+        # Componente especular
     
-    cor_final = np.multiply(iluminacao, cor)/255 # Não sei o que isso faz direito
-    return cor_final
+    # Correção de overflow
+    for i in range(0,3):
+        if iluminacao[i] > 255:
+            iluminacao[i] = 255
+    return iluminacao
