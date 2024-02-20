@@ -15,16 +15,17 @@ def phong(objeto, lista_luzes, ponto_intersec, n_ponto, camera):
         
         # COMPONENTE DIFUSA
         cosln = np.dot(n_ponto, objeto_luz)
+        if cosln < 0:
+            cosln = 0
         difusa = luz.intensidade * objeto.cor * objeto.kd * cosln
         
         # COMPONENTE ESPECULAR
-        vetor_refletido = 2*n_ponto * np.dot(n_ponto, objeto_luz) - objeto_luz
-        vetor_observador = ponto_intersec - camera
-        cosrvq = np.dot(vetor_refletido, vetor_observador)**objeto.q
-        especular = luz.intensidade * objeto.ks * cosrvq
+        #vetor_refletido = ((2*n_ponto) * np.dot(n_ponto, objeto_luz)) - objeto_luz
+        #vetor_observador = ponto_intersec - camera
+        #cosrvq = np.dot(vetor_refletido, vetor_observador)**objeto.q
+        #especular = luz.intensidade * objeto.ks * cosrvq
 
-        de = np.add(difusa, especular)
-        return np.add(de, lamb)
+        return difusa + lamb
     
 def intersect_triangle(ray, v0, v1, v2, camera):
     '''''FUNÇÃO DADA NO LIVRO PRA CALCULAR A INTERSECÇÃO COM O TRIANGULO'''''
@@ -81,7 +82,6 @@ def collor(camera, vetor_atual, objetos):
     T = INF
     current_obj = None
     n_ponto = None
-    cor = np.array([0,0,0])
     for objeto in objetos:
         if isinstance(objeto, Esfera):
             oc = camera - objeto.centro
@@ -123,19 +123,25 @@ def collor(camera, vetor_atual, objetos):
         if current < T:
             T = current
             current_obj = objeto
-    if T == INF:
-        return cor
-    else:
-        x = camera[0] + vetor_atual * T
-        y = camera[1] + vetor_atual * T
-        z = camera[2] + vetor_atual * T
+    if T < INF:
+        x = camera[0] + vetor_atual[0] * T
+        y = camera[1] + vetor_atual[1] * T
+        z = camera[2] + vetor_atual[2] * T
         ponto_intersec = np.array([x,y,z])
         if isinstance (current_obj, Esfera):
             n_ponto = ponto_intersec - current_obj.centro
         elif isinstance (current_obj,Triangulo) or isinstance (current_obj,Plano):
             n_ponto = current_obj.vetor_normal 
         phong_v = phong(current_obj, fonte_luz, ponto_intersec, n_ponto, camera)
+        if phong_v[0] > 255:
+            phong_v[0] = 255
+        if phong_v[1] > 255:
+            phong_v[1] = 255
+        if phong_v[2] > 255:
+            phong_v[2] = 255
         return phong_v
+    else:
+        return np.array([0,0,0])
 
 '''FUNÇÃO PARA RETIRAR O NP.ARRAY, FACILITANDO COMPOSIÇÃO DE TRANSFORMAÇÕES'''
 def nparray_para_tuple(vetor):
@@ -294,7 +300,7 @@ for i in range(n):
 #################################################################################
 ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
 objetos = []
-objetos.append(Esfera(0.5,[4,0,0],[255,255,255],1,1,1,10))
+objetos.append(Esfera(0.5,[4,0,0],[255,0,0],0.5,0.3,0.2,200))
 # ROSA PINK (127, 0, 255)
 # BEGE (152,186, 213)
 
@@ -302,7 +308,8 @@ objetos.append(Esfera(0.5,[4,0,0],[255,255,255],1,1,1,10))
 # para gerar a imagem final
 for i in range(hres):
     for j in range(vres):
+        #print(f"[{i}, {j}]")
         vetor_atual = vetor_inicial + i*desl_h + j*desl_v
         imagem[j,i] = collor(camera, vetor_atual, objetos)
-
+print(imagem)
 cv.imshow("grupo06", imagem)
