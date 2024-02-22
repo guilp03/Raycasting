@@ -230,7 +230,7 @@ def collor(camera, vetor_atual, objetos, return_obj = False):
         return(t, cor, collor_obj)
     return (t, cor, None)
 
-def phong_no_recursion(camera, vetor_atual, objetos, luzes):
+def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3):
     '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG SEM RECURSÃO'''
     pass
     # TODO: fazer algoritmo com o grupo
@@ -287,16 +287,31 @@ def phong_no_recursion(camera, vetor_atual, objetos, luzes):
         
         # Componente especular
 
-        # Encontrar vetor de reflexão
+        # Encontrar vetor de reflexão da luz
         Ri = 2*normal*(np.dot(normal, Li)) - Li
+        
         dot = np.dot(Ri, Vetor_espectador)
         if dot > 0:
             # Esse último np.array serve para colocar a iluminação proporcional a 255
             esp = luz.intensidade * mat.k_especular * pow(dot, mat.k_rugosidade) * np.array((255.0,255.0,255.0))
             iluminacao += esp
-    
+        
+    # Componente reflexão
+    if recursao_limite > 0 and mat.reflete:
+        # Vetor reflexão do espectador
+        R = 2*normal*(np.dot(normal,Vetor_espectador)) - Vetor_espectador
+        
+        Ir = phong(ponto_objeto, R, objetos, luzes, recursao_limite-1)
+        ref = Ir*mat.k_reflexão
+        iluminacao += ref
+        
+    # Component refração
+            
     # Correção de overflow
     for i in range(0,3):
         if iluminacao[i] > 255:
             iluminacao[i] = 255
     return iluminacao
+
+def phong_no_recursion(camera, vetor_atual, objetos, luzes):
+    return phong(camera, vetor_atual, objetos, luzes, recursao_limite=0)

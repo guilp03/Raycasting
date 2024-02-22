@@ -9,7 +9,7 @@ import readobj
 import objeto
 import afim
 INF = 9999999999
-from phong import normalize, collor, phong_no_recursion
+from phong import normalize, collor, phong_no_recursion, phong
 from cena import adcionar_esfera, adcionar_plano, adcionar_triangulo, adicionar_luz, OBJETOS_LISTA, LUZES_LISTA
 import cena
 
@@ -19,8 +19,8 @@ def main():
     centro = np.array([1,0,0])
     up = np.array([0,1,0])
     distancia = 1
-    hres = 700
-    vres = 700
+    hres = 900
+    vres = 900
     tam_x = 1
     tam_y = 1
     # criação das coordenadas
@@ -38,22 +38,24 @@ def main():
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
     
     # Adicionar luz
-    adicionar_luz(objeto.Luz((0.0,5000.0,0.0), (0.5,0.5,0.5)))
+    adicionar_luz(objeto.Luz((0.0,5.0,0.0), (0.7,0.7,0.7)))
+    #adicionar_luz(objeto.Luz((0.0,3.0,5.0), (0.5,0.5,0.5)))
+    #adicionar_luz(objeto.Luz((0.0,3.0,-5.0), (0.5,0.5,0.5)))
     cena.COR_AMBIENTE = np.array((255,255,255))
 
-    quadrado = readobj.read_obj("square.obj", (255,255,255))
-    for triangulo_ in quadrado:
-        adcionar_triangulo(
-            *triangulo_, 
-            _material = objeto.Material(
-                kd=(0.0,0.0,0.0),
-                ke=(0.5,0.5,0.5),
-                ka=(0.1,0.1,0.1),
-                kr=(0.5,0.5,0.5),
-                kt = (0.5,0.5,0.5),
-                n = 1
-                )
-            )
+    # quadrado = readobj.read_obj("square.obj", (255,255,255))
+    # for triangulo_ in quadrado:
+    #     adcionar_triangulo(
+    #         *triangulo_, 
+    #         _material = objeto.Material(
+    #             kd=(0.0,0.0,0.0),
+    #             ke=(0.5,0.5,0.5),
+    #             ka=(0.1,0.1,0.1),
+    #             kr= 0.5,
+    #             kt = 0.5,
+    #             n = 1
+    #             )
+    #         )
 
 
     cubo = readobj.read_obj("cube.obj", (255,255,255))
@@ -65,23 +67,49 @@ def main():
                 kd=(0.0,0.0,0.0),
                 ke=(0.5,0.5,0.5),
                 ka=(0.2,0.1,0.0),
-                kr=(0.5,0.5,0.5),
-                kt = (0.5,0.5,0.5),
+                kr=0.5,
+                kt = 0.5,
                 n = 3,
-                od = (160,70,0)
+                od = (160,70,0),
+                reflete=False
             )
         )
     OBJETOS_LISTA.append(cubo_objeto)
 
-    adcionar_esfera(0.5, (2,0,0), (255,255,255),
+    adcionar_esfera(0.4, (2,0,0), (255,255,255),
             _material = objeto.Material(
-                kd=(0.3,0.45,0.15),
-                ke=(0.4,0.6,0.2),
-                ka=(0.2,0.3,0.1),
-                kr=(0.5,0.5,0.5),
-                kt = (0.5,0.5,0.5),
-                n = 4,
-                od = (255,255,255) 
+                kd=(0.1,0.12,0.1),
+                ke=(0.4,0.2,0.15),
+                ka=(0.1,0.06,0.05),
+                kr=0.4,
+                kt = 0.5,
+                n = 2,
+                od = (255,255,255),
+                reflete=True
+            )
+    )
+    adcionar_esfera(0.4, (2,1,0), (255,255,255),
+            _material = objeto.Material(
+                kd=(0.1,0.12,0.1),
+                ke=(0.4,0.2,0.15),
+                ka=(0.1,0.06,0.05),
+                kr=0.4,
+                kt = 0.5,
+                n = 2,
+                od = (255,255,255),
+                reflete=True
+            )
+    )
+    adcionar_esfera(0.4, (2,-1,0), (255,255,255),
+            _material = objeto.Material(
+                kd=(0.1,0.12,0.1),
+                ke=(0.4,0.2,0.15),
+                ka=(0.1,0.06,0.05),
+                kr=0.4,
+                kt = 0.5,
+                n = 2,
+                od = (255,255,255),
+                reflete=True
             )
     )
 
@@ -90,7 +118,7 @@ def main():
     for i in range(hres):
         for j in range(vres):
             vetor_atual = vetor_inicial + i*desl_h + j*desl_v
-            imagem[j,i] = phong_no_recursion(camera, vetor_atual, OBJETOS_LISTA, LUZES_LISTA)
+            imagem[j,i] = phong(camera, vetor_atual, OBJETOS_LISTA, LUZES_LISTA, 3)
             print(f"{'{:.2f}'.format(i*100/hres)}%", end='\r')
     print("100.00%", end='\r')
 

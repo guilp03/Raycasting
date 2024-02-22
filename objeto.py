@@ -19,19 +19,26 @@ class Material:
     k_difuso: np.ndarray # [0,1]³
     k_especular: np.ndarray # [0,1]³
     k_ambiental: np.ndarray # [0,1]³
-    k_reflexão: np.ndarray # [0,1]³
-    k_transmissão: np.ndarray # [0,1]³
+    k_reflexão: float # [0,1]
+    k_transmissão: float # [0,1]
     k_rugosidade: float # > 0
     o_difuso: np.ndarray # [0,255]³
+    ior: float # >= 1
+    reflete: bool
+    refrata: bool
     
-    def __init__(self, kd, ke, ka = (1,1,1), kr = None, kt = None, n: float = 0.0, od = (255,255,255)):
+    def __init__(self, kd, ke, ka = (1,1,1), kr = 0.0, kt = 0.0, n: float = 0.0, od = (255,255,255), ior = 1,
+                 reflete = False, refrata = False):
         self.k_difuso = np.array(kd)
         self.k_especular = np.array(ke)
         self.k_ambiental = np.array(ka)
-        self.k_reflexão = np.array(kr)
-        self.k_transmissão = np.array(kt)
+        self.k_reflexão = kr
+        self.k_transmissão = kt
         self.k_rugosidade = n
         self.o_difuso = np.array(od)
+        self.ior = ior
+        self.reflete = reflete
+        self.refrata = refrata
 
 class Triangulo:
     p1: np.ndarray # R³
