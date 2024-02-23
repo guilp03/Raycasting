@@ -78,38 +78,44 @@ def main():
 
     adcionar_esfera(0.4, (2,0,0), (255,255,255),
             _material = objeto.Material(
-                kd=(0.1,0.12,0.1),
-                ke=(0.4,0.2,0.15),
-                ka=(0.1,0.06,0.05),
-                kr=0.4,
-                kt = 0.5,
+                kd=(0.0,0.0,0.0),
+                ke=(0.0,0.0,0.0),
+                ka=(0.0,0.0,0.0),
+                kr = 0.4,
+                kt = 0.9,
                 n = 2,
+                ior = 1.1,
                 od = (255,255,255),
-                reflete=True
+                reflete=False,
+                refrata=True
             )
     )
     adcionar_esfera(0.4, (2,1,0), (255,255,255),
-            _material = objeto.Material(
-                kd=(0.1,0.12,0.1),
-                ke=(0.4,0.2,0.15),
-                ka=(0.1,0.06,0.05),
-                kr=0.4,
-                kt = 0.5,
+           _material = objeto.Material(
+                kd=(0.0,0.0,0.0),
+                ke=(0.0,0.0,0.0),
+                ka=(0.0,0.0,0.0),
+                kr = 0.4,
+                kt = 0.9,
                 n = 2,
+                ior = 1.1,
                 od = (255,255,255),
-                reflete=True
+                reflete=False,
+                refrata=True
             )
     )
     adcionar_esfera(0.4, (2,-1,0), (255,255,255),
             _material = objeto.Material(
-                kd=(0.1,0.12,0.1),
-                ke=(0.4,0.2,0.15),
-                ka=(0.1,0.06,0.05),
-                kr=0.4,
-                kt = 0.5,
+                kd=(0.0,0.0,0.0),
+                ke=(0.0,0.0,0.0),
+                ka=(0.0,0.0,0.0),
+                kr = 0.4,
+                kt = 0.9,
                 n = 2,
+                ior = 1.1,
                 od = (255,255,255),
-                reflete=True
+                reflete=False,
+                refrata=True
             )
     )
 

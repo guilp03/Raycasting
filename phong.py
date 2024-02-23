@@ -230,7 +230,7 @@ def collor(camera, vetor_atual, objetos, return_obj = False):
         return(t, cor, collor_obj)
     return (t, cor, None)
 
-def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3):
+def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3, refracao_atual = 1.0, dentro_obj = False):
     '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG SEM RECURSÃO'''
     pass
     # TODO: fazer algoritmo com o grupo
@@ -301,11 +301,42 @@ def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3):
         # Vetor reflexão do espectador
         R = 2*normal*(np.dot(normal,Vetor_espectador)) - Vetor_espectador
         
-        Ir = phong(ponto_objeto, R, objetos, luzes, recursao_limite-1)
+        Ir = phong(ponto_objeto, R, objetos, luzes, recursao_limite-1, refracao_atual, dentro_obj)
         ref = Ir*mat.k_reflexão
         iluminacao += ref
         
     # Component refração
+    if recursao_limite > 0 and mat.refrata:
+        if not dentro_obj:
+            n_out = refracao_atual
+            n_in = mat.ior
+            refracao_atual = n_in
+            dentro_obj = True
+            normal_op = -normal
+        elif refracao_atual == mat.ior:
+            n_out = mat.ior
+            n_in = 1.0 #ar
+            refracao_atual = 1.0
+            dentro_obj = False
+            normal_op = normal
+        else:
+            raise Exception("Não implementado")
+        
+        n_rev = n_out/n_in
+        sin_teta = np.linalg.norm(np.cross(Vetor_espectador,-normal_op))
+        cos_teta = 1 - sin_teta * sin_teta
+        sin_teta_t = sin_teta * n_rev
+        cos_teta_t = 1 - sin_teta_t * sin_teta_t
+        
+        # Equação modificada para por T na direção certa
+        # normal_op é o oposto da normal no lado do raio
+        T = - n_rev*Vetor_espectador - (cos_teta_t - n_rev*cos_teta)*normal_op
+        It = phong(ponto_objeto, T, objetos, luzes, recursao_limite-1, refracao_atual, dentro_obj)
+        transm = It*mat.k_transmissão
+        iluminacao += transm
+        
+            
+
             
     # Correção de overflow
     for i in range(0,3):
