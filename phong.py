@@ -231,9 +231,7 @@ def collor(camera, vetor_atual, objetos, return_obj = False):
     return (t, cor, None)
 
 def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3, refracao_atual = 1.0, dentro_obj = False):
-    '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG SEM RECURSÃO'''
-    pass
-    # TODO: fazer algoritmo com o grupo
+    '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG'''
     # Detecta o objeto de colisão:
     res = collor(camera, vetor_atual, objetos, True)
     t: float = res[0]
