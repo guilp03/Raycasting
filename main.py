@@ -38,7 +38,7 @@ def main():
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
     
     # Adicionar luz
-    #adicionar_luz(objeto.Luz((0.0,5.0,0.0), (0.7,0.7,0.7)))
+    adicionar_luz(objeto.Luz((-4.0,3.0,0.0), (0.3,0.3,0.3)))
     #adicionar_luz(objeto.Luz((0.0,3.0,5.0), (0.5,0.5,0.5)))
     #adicionar_luz(objeto.Luz((0.0,3.0,-5.0), (0.5,0.5,0.5)))
     cena.COR_AMBIENTE = np.array((255,255,255))
@@ -75,6 +75,17 @@ def main():
     #        )
     #    )
     #OBJETOS_LISTA.append(cubo_objeto)
+    adcionar_plano((0,0,0), (0,5,0), (-1,-1,0), _material = objeto.Material(
+               kd=(0.4,0.4,0.4),
+               ke=(0.0,0.0,0.0),
+               ka=(0.0,0.0,0.0),
+               kr = 0.4,
+               kt = 0.9,
+               n = 2,
+               ior = 1.1,
+               od = (255,255,255),
+               reflete=False,
+               refrata=True))
 
     #adcionar_esfera(0.4, (2,0,0), (255,255,255),
     #        _material = objeto.Material(

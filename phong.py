@@ -273,6 +273,8 @@ def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3, refracao_atu
         match obj[0]:
             case "triangulo":
                 normal = obj.normal
+            case "plano":
+                normal = obj.normal
             case "esfera":
                 normal = normalize(ponto_objeto - obj.centro)
         

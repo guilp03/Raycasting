@@ -105,7 +105,33 @@ class Triangulo:
                 return self.text
             case 10: 
                 return self.material
-
+       
+            
+class Plano:
+    cor: np.ndarray # [0,255]³
+    normal: np.ndarray # R³ normalizado
+    ponto: np.ndarray
+    material: Material
+    
+    def __init__(self, cor, normal, ponto, material = None) -> None:
+        self.cor = np.array(cor)
+        self.normal = np.array(normal)
+        self.ponto = np.array(ponto)
+        self.material = material
+        
+    def __getitem__(self, key):
+        ''''' 0 = TIPO | 1 = COR |  2 = PONTO | 3 = VETOR_NORMAL '''''
+        match key:
+            case 0:
+                return "plano"
+            case 1:
+                return self.cor
+            case 2:
+                return self.ponto
+            case 3:
+                return self.normal
+    
+    
 class Esfera:
     cor: np.ndarray # [0,255]³
     raio: float

@@ -6,10 +6,10 @@ LUZES_LISTA = []
 COR_AMBIENTE: np.ndarray # [0,255]³
 
 # att: futuramente vai ser melhor criar uma classe pra cada
-def adcionar_plano(cor, ponto, vetor):
+def adcionar_plano(cor, ponto, vetor, _material = None):
     ''''' 0 = TIPO | 1 = COR |  2 = PONTO | 3 = VETOR_NORMAL '''''
 
-    OBJETOS_LISTA.append(["plano", np.array(cor), np.array(ponto), np.array(vetor)])
+    OBJETOS_LISTA.append(objeto.Plano(cor, vetor, ponto, material=_material))
 
 def adcionar_esfera(raio, centro, cor, _material = None):
     ''''' 0 = TIPO | 1 = COR |2 = RAIO | 3 = CENTRO ''''' 
