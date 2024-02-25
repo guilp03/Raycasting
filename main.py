@@ -38,7 +38,7 @@ def main():
     ''''' INICIALIZAÇÃO DOS OBJETOS PARA CASOS TESTE '''''
     
     # Adicionar luz
-    adicionar_luz(objeto.Luz((0.0,5.0,0.0), (0.7,0.7,0.7)))
+    #adicionar_luz(objeto.Luz((0.0,5.0,0.0), (0.7,0.7,0.7)))
     #adicionar_luz(objeto.Luz((0.0,3.0,5.0), (0.5,0.5,0.5)))
     #adicionar_luz(objeto.Luz((0.0,3.0,-5.0), (0.5,0.5,0.5)))
     cena.COR_AMBIENTE = np.array((255,255,255))
@@ -58,67 +58,112 @@ def main():
     #         )
 
 
-    cubo = readobj.read_obj("cube.obj", (255,255,255))
-    cubo_objeto = objeto.Objeto()
-    for triangulo_ in cubo:
-        cubo_objeto.adcionar_triangulo(
-            *triangulo_,
-            _material = objeto.Material(
-                kd=(0.0,0.0,0.0),
-                ke=(0.5,0.5,0.5),
-                ka=(0.2,0.1,0.0),
-                kr=0.5,
-                kt = 0.5,
-                n = 3,
-                od = (160,70,0),
-                reflete=False
-            )
-        )
-    OBJETOS_LISTA.append(cubo_objeto)
+    #cubo = readobj.read_obj("cube.obj", (255,255,255))
+    #cubo_objeto = objeto.Objeto()
+    #for triangulo_ in cubo:
+    #    cubo_objeto.adcionar_triangulo(
+    #        *triangulo_,
+    #        _material = objeto.Material(
+    #            kd=(0.0,0.0,0.0),
+    #            ke=(0.5,0.5,0.5),
+    #            ka=(0.2,0.1,0.0),
+    #            kr=0.5,
+    #            kt = 0.5,
+    #            n = 3,
+    #            od = (160,70,0),
+    #            reflete=False
+    #        )
+    #    )
+    #OBJETOS_LISTA.append(cubo_objeto)
 
-    adcionar_esfera(0.4, (2,0,0), (255,255,255),
-            _material = objeto.Material(
-                kd=(0.0,0.0,0.0),
-                ke=(0.0,0.0,0.0),
-                ka=(0.0,0.0,0.0),
-                kr = 0.4,
-                kt = 0.9,
-                n = 2,
-                ior = 1.1,
-                od = (255,255,255),
-                reflete=False,
-                refrata=True
-            )
-    )
-    adcionar_esfera(0.4, (2,1,0), (255,255,255),
-           _material = objeto.Material(
-                kd=(0.0,0.0,0.0),
-                ke=(0.0,0.0,0.0),
-                ka=(0.0,0.0,0.0),
-                kr = 0.4,
-                kt = 0.9,
-                n = 2,
-                ior = 1.1,
-                od = (255,255,255),
-                reflete=False,
-                refrata=True
-            )
-    )
-    adcionar_esfera(0.4, (2,-1,0), (255,255,255),
-            _material = objeto.Material(
-                kd=(0.0,0.0,0.0),
-                ke=(0.0,0.0,0.0),
-                ka=(0.0,0.0,0.0),
-                kr = 0.4,
-                kt = 0.9,
-                n = 2,
-                ior = 1.1,
-                od = (255,255,255),
-                reflete=False,
-                refrata=True
-            )
-    )
+    #adcionar_esfera(0.4, (2,0,0), (255,255,255),
+    #        _material = objeto.Material(
+    #            kd=(0.0,0.0,0.0),
+    #            ke=(0.0,0.0,0.0),
+    #            ka=(0.0,0.0,0.0),
+    #            kr = 0.4,
+    #            kt = 0.9,
+    #            n = 2,
+    #            ior = 1.1,
+    #            od = (255,255,255),
+    #            reflete=False,
+    #            refrata=True
+    #        )
+    #)
+    #adcionar_esfera(0.4, (2,1,0), (255,255,255),
+    #       _material = objeto.Material(
+    #            kd=(0.0,0.0,0.0),
+    #            ke=(0.0,0.0,0.0),
+    #           ka=(0.0,0.0,0.0),
+    #            kr = 0.4,
+    #            kt = 0.9,
+    #            n = 2,
+    #            ior = 1.1,
+    #            od = (255,255,255),
+    #            reflete=False,
+    #            refrata=True
+    #        )
+    #)
+    #adcionar_esfera(0.4, (2,-1,0), (255,255,255),
+    #        _material = objeto.Material(
+    #            kd=(0.0,0.0,0.0),
+    #            ke=(0.0,0.0,0.0),
+    #            ka=(0.0,0.0,0.0),
+    #            kr = 0.4,
+    #            kt = 0.9,
+    #            n = 2,
+    #            ior = 1.1,
+    #            od = (255,255,255),
+    #            reflete=False,
+    #            refrata=True
+    #        )
+    #)
 
+    adicionar_luz(objeto.Luz((0,5,0),(0.5,0.5,0.5)))
+    adcionar_esfera(1,(5,2,0), (255, 0, 0),
+            objeto.Material(kd=(0.0,0.0,0.0),
+            ke=(1,0,0.5),
+            ka=(0.2,0.1,0.0),
+            kr=0.5,
+            kt=0.5,
+            n=3,
+            od=(255,0,127),
+            reflete=False,
+            refrata=False))
+    
+    adcionar_esfera(1,(5,2,2), (255, 255, 0),
+            objeto.Material(kd=(0.5,0.3,0.3),
+            ke=(1,0,0.5),
+            ka=(0.2,0.1,0.0),
+            kr=0.5,
+            kt=0.5,
+            n=3,
+            od=(255,0,127),
+            reflete=False,
+            refrata=False))
+    
+    adcionar_esfera(1,(5,0,2), (0, 0, 255),
+            objeto.Material(kd=(0.0,0.0,0.0),
+            ke=(1,0,0.5),
+            ka=(0.2,0.1,0.0),
+            kr=0.5,
+            kt=0.5,
+            n=3,
+            od=(255,0,127),
+            reflete=False,
+            refrata=False))
+
+    
+    #adcionar_triangulo((255, 0, 127), (0,3,-3), (3,0,3), (0,3,0), 
+    #        objeto.Material(kd=(0.0,0.0,0.0),
+    #        ke=(0.5,0.5,0.5),
+    #        ka=(0.2,0.1,0.0),
+    #        kr=0.5,
+    #        kt = 0.5,
+    #        n = 3,
+    #        od = (160,70,0),
+    #        reflete=False,
+    #        refrata=True))
     # for que percorre toda a tela e gera a intesecção com os objetos
     # para gerar a imagem final
     for i in range(hres):

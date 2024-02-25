@@ -48,3 +48,18 @@ for i in range(hres):
         imagem[j,i] = collor(camera, vetor_atual, objetos)[1]
 
 cv.imshow("grupo06 - DEPOIS", imagem)
+
+
+#############################################################################
+
+adicionar_luz(objeto.Luz((0,5,0),(0.5,0.5,0.5)))
+adcionar_esfera(1,(3,0,0), (255, 0, 127),
+        objeto.Material(kd=(0.0,0.0,0.0),
+        ke=(0.5,0.5,0.5),
+        ka=(0.2,0.1,0.0),
+        kr=0.5,
+        kt = 0.5,
+        n = 3,
+        od = (160,70,0),
+        reflete=True,
+        refrata=False))
