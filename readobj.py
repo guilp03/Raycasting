@@ -1,3 +1,4 @@
+'''LEITURA DOS ARQUIVOS .obj EM MALHAS DE TRIÂNGULOS'''
 import numpy as np
 import re
 import sys

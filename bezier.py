@@ -1,4 +1,4 @@
-import triangulo
+import objeto as obj
 import numpy as np
 from typing import List
 from functools import cache
@@ -43,7 +43,7 @@ class BezierCurve:
         # print(self.pontos_de_controle)
         
     
-    def criar_malha(self, resolucao = 5, altura = 2) -> triangulo.Objeto:
+    def criar_malha(self, resolucao = 5, altura = 2) -> obj.Objeto:
         """Cria uma malha de triângulos com base na especificação da curva
         A malha irá consistir de uma bounding box exterior e um conjunto de triângulos
         
@@ -71,7 +71,7 @@ class BezierCurve:
             pontos_render.append(pontos_render_linha)
         
         # Gerar triângulos
-        objeto = triangulo.Objeto()
+        objeto = obj.Objeto()
         
         # Magenta
         for i in range(0, resolucao-1):
