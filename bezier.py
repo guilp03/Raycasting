@@ -43,7 +43,7 @@ class BezierCurve:
         # print(self.pontos_de_controle)
         
     
-    def criar_malha(self, resolucao = 5, altura = 2) -> obj.Objeto:
+    def criar_malha(self, resolucao = 5, _material = None) -> obj.Objeto:
         """Cria uma malha de triângulos com base na especificação da curva
         A malha irá consistir de uma bounding box exterior e um conjunto de triângulos
         
@@ -76,12 +76,12 @@ class BezierCurve:
         # Magenta
         for i in range(0, resolucao-1):
             for j in range(0, resolucao-1):
-                objeto.adcionar_triangulo((255, 0, 255), pontos_render[i][j], pontos_render[i+1][j], pontos_render[i][j+1])
+                objeto.adcionar_triangulo((255, 0, 255), pontos_render[i][j], pontos_render[i+1][j], pontos_render[i][j+1], _material = _material)
         
         # Ciano
         for i in range(0,resolucao-1):
             for j in range(1,resolucao):
-                objeto.adcionar_triangulo((0, 255, 255), pontos_render[i][j],pontos_render[i+1][j],pontos_render[i+1][j-1])
+                objeto.adcionar_triangulo((0, 255, 255), pontos_render[i][j],pontos_render[i+1][j],pontos_render[i+1][j-1], _material = _material)
         
         # TODO: diferentes alturas. Ou seja, mais camadas de bounding box e subobjetos
         # TODO: textura 

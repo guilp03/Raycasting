@@ -166,7 +166,16 @@ def main():
 #             refrata=False))
     ## CURVA DE BEZIER
     bez = bezier.BezierCurve(2, 2, [(7,0,-2),(7,1,-2),(7,2,-2)], [(7,1,-1),(7,2,-1),(7,3,-1)], [(7,2,2),(7,3,2),(7,4,3)])
-    malha = bez.criar_malha(resolucao=12)
+    malha = bez.criar_malha(resolucao=12, _material = objeto.Material(
+            kd=(0.0,0.0,0.0),
+            ke=(1,0,0.5),
+            ka=(0.2,0.1,0.0),
+            kr=0.5,
+            kt=0.5,
+            n=3,
+            od=(255,0,127),
+            reflete=False,
+            refrata=False))
     cena.OBJETOS_LISTA.append(malha)
     
     #adcionar_triangulo((255, 0, 127), (0,3,-3), (3,0,3), (0,3,0), 
