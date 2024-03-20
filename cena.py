@@ -16,14 +16,17 @@ def adcionar_esfera(raio, centro, cor, _material = None):
 
     OBJETOS_LISTA.append(objeto.Esfera(np.array(cor),raio,np.array(centro), material=_material))
 
-def adcionar_triangulo(cor, p1, p2, p3, _material = None):
+def adcionar_triangulo(cor, p1, p2, p3, t1 = None, t2 = None, t3 = None, text = None, _material = None):
     ''''' 0 = TIPO | 1 = COR | 2,3,4 = PONTO | 5 = VETOR_NORMAL '''''
     # transforma os pontos em array
     p1 = np.array(p1)
     p2 = np.array(p2)
     p3 = np.array(p3)
+    t1 = np.array(t1)
+    t2 = np.array(t2)
+    t3 = np.array(t3)
     cor = np.array(cor)
-    tri = objeto.Triangulo(cor, p1, p2, p3, material=_material)
+    tri = objeto.Triangulo(cor, p1, p2, p3, t1, t2, t3, text, material=_material)
     OBJETOS_LISTA.append(tri)
 
 def adicionar_luz(luz: objeto.Luz):

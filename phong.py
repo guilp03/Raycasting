@@ -129,9 +129,19 @@ def intersect_triangle(ray, camera, triangulo_: objeto.Triangulo):
     if t< 0.01:
         return (INF, None)
     
-    # TODO: textura (usar alpha, beta e gamma, um arquivo de textura e vector texture)
+    # Determina a cor
+    alpha = 1 - beta - gamma
+    # P = alpha*v0 + beta*v1 + gama*v2
+    if type(vt0) is not np.ndarray and vt0 == None:
+        cor_res = cor
+    else:
+        # Encontrar o pixel correspondente na textura
+        Ptextura = alpha*vt0 + beta*vt1 + gamma*vt2
+        cor_res = text.map(Ptextura[0], Ptextura[1])
     
-    return (t, cor)
+######################################
+    
+    return (t, cor_res)
 
 def intersect_esfera(ray, camera, esfera_: objeto.Esfera):
     '''''INTERSECÇÃO COM A ESFERA'''''
@@ -229,6 +239,9 @@ def collor(camera, vetor_atual, objetos, return_obj = False):
     if return_obj:
         return(t, cor, collor_obj)
     return (t, cor, None)
+
+def raycast(camera, vetor_atual, objetos):
+    return collor(camera, vetor_atual, objetos)[1]
 
 def phong(camera, vetor_atual, objetos, luzes, recursao_limite = 3, refracao_atual = 1.0, dentro_obj = False):
     '''FUNÇÃO PARA IMPLEMENTAR O MODELO DE ILUMINAÇÃO DE PHONG'''

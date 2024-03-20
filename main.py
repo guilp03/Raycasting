@@ -9,10 +9,11 @@ import readobj
 import objeto
 import afim
 INF = 9999999999
-from phong import normalize, collor, phong_no_recursion, phong
+from phong import normalize, raycast, phong_no_recursion, phong
 from cena import adcionar_esfera, adcionar_plano, adcionar_triangulo, adicionar_luz, OBJETOS_LISTA, LUZES_LISTA
 import cena
 import bezier
+import textura
 
 def main():
     ''''' INICIALIZAÇÃO DO QUE É NECESSÁRIO PARA O RAYCASTING/RAYTRACING '''''
@@ -50,7 +51,7 @@ def main():
                              [(7,0,-2),(8,1,-2),(8,2,-2), (7, 3, -2)], 
                              [(7,0,-1),(8,1,-1),(8,2,-1), (7, 3, -1)], 
                              [(7,0,0),(7,1,0),(7,2,0), (7,3,0)])
-    malha = bez.criar_malha(resolucao=15, _material = objeto.Material(
+    malha = bez.criar_malha(resolucao=7, _material = objeto.Material(
             kd=(0.3, 0.0 ,0.15),
             ke=(1.0, 0.0, 0.5),
             ka=(0.2,0.0,0.1),
@@ -62,24 +63,30 @@ def main():
             refrata=False))
     cena.OBJETOS_LISTA.append(malha)
     
-    bez2 = bezier.BezierCurve(2, 2, 
-                             [(7,0,2),(7,1,2),(7,2,2)],
-                             [(7,0,3),(7,1,3),(7,2,3)], 
-                             [(7,0,4),(7,1,4),(7,2,4)])
+    # bez2 = bezier.BezierCurve(2, 2, 
+    #                          [(7,0,2),(7,1,2),(7,2,2)],
+    #                          [(7,0,3),(7,1,3),(7,2,3)], 
+    #                          [(7,0,4),(7,1,4),(7,2,4)])
     
-    malha2 = bez2.criar_malha(resolucao=4, _material = objeto.Material(
-            kd=(0,0,0),
-            ke=(0.0, 1.0, 0.5),
-            ka=(0,0,0),
-            kr=0.5,
-            kt=0.5,
-            n=3,
-            od=(255,255,255),
-            reflete=False,
-            refrata=False))
-    cena.OBJETOS_LISTA.append(malha2)
+    # malha2 = bez2.criar_malha(resolucao=4, _material = objeto.Material(
+    #         kd=(0,0,0),
+    #         ke=(0.0, 1.0, 0.5),
+    #         ka=(0,0,0),
+    #         kr=0.5,
+    #         kt=0.5,
+    #         n=3,
+    #         od=(255,255,255),
+    #         reflete=False,
+    #         refrata=False))
+    # cena.OBJETOS_LISTA.append(malha2)
     
+    textura_quadrado = textura.Textura("square.texture.jpg")
     
+    cubo = readobj.read_obj("cube2.obj", (50,140,70), texture_on=True)
+    cubo_objeto = objeto.Objeto()
+    for triangulo_ in cubo:
+        cubo_objeto.adcionar_triangulo(*triangulo_, textura_quadrado)
+    cena.OBJETOS_LISTA.append(cubo_objeto)
     
     for i in range(hres):
         for j in range(vres):
