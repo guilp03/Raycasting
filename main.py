@@ -44,6 +44,8 @@ def main():
     adicionar_luz(objeto.Luz((0,-2,0),(0.5,0.5,0.5)))
     cena.COR_AMBIENTE = np.array((255,255,255))
 
+    
+    textura_quadrado = textura.Textura("square.texture.jpg")
  
     ## CURVAS DE BEZIER
     bez = bezier.BezierCurve(3, 3, 
@@ -51,7 +53,7 @@ def main():
                              [(7,0,-2),(8,1,-2),(8,2,-2), (7, 3, -2)], 
                              [(7,0,-1),(8,1,-1),(8,2,-1), (7, 3, -1)], 
                              [(7,0,0),(7,1,0),(7,2,0), (7,3,0)])
-    malha = bez.criar_malha(resolucao=7, _material = objeto.Material(
+    malha = bez.criar_malha(resolucao=7, text = textura_quadrado, _material = objeto.Material(
             kd=(0.3, 0.0 ,0.15),
             ke=(1.0, 0.0, 0.5),
             ka=(0.2,0.0,0.1),
@@ -80,18 +82,13 @@ def main():
     #         refrata=False))
     # cena.OBJETOS_LISTA.append(malha2)
     
-    textura_quadrado = textura.Textura("square.texture.jpg")
     
-    cubo = readobj.read_obj("cube2.obj", (50,140,70), texture_on=True)
-    cubo_objeto = objeto.Objeto()
-    for triangulo_ in cubo:
-        cubo_objeto.adcionar_triangulo(*triangulo_, textura_quadrado)
-    cena.OBJETOS_LISTA.append(cubo_objeto)
     
     for i in range(hres):
         for j in range(vres):
             vetor_atual = vetor_inicial + i*desl_h + j*desl_v
-            imagem[j,i] = phong(camera, vetor_atual, OBJETOS_LISTA, LUZES_LISTA, 3)
+            # imagem[j,i] = phong(camera, vetor_atual, OBJETOS_LISTA, LUZES_LISTA, 3)
+            imagem[j,i] = raycast(camera, vetor_atual, OBJETOS_LISTA)
             print(f"{'{:.2f}'.format(i*100/hres)}%", end='\r')
     print("100.00%", end='\r')
 
