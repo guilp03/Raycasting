@@ -48,12 +48,8 @@ def main():
     textura_quadrado = textura.Textura("square.texture.jpg")
  
     ## CURVAS DE BEZIER
-    bez = bezier.BezierCurve(3, 3, 
-                             [(7,0,-3.1),(7,1,-3),(7,2,-3),(7,3,-3)],
-                             [(7,0,-2),(8,1,-2),(8,2,-2), (7, 3, -2)], 
-                             [(7,0,-1),(8,1,-1),(8,2,-1), (7, 3, -1)], 
-                             [(7,0,0),(7,1,0),(7,2,0), (7,3,0)])
-    malha = bez.criar_malha(resolucao=7, text = textura_quadrado, _material = objeto.Material(
+    bez = bezier.BezierCurve(2, 2, [(7,0,-2),(8,1,-2),(9,2,-2)], [(7,1,-1),(7,2,-1),(7,3,-1)], [(6,2,2),(5,3,2),(4,4,3)])
+    malha = bez.criar_malha(resolucao=12, text= textura_quadrado, _material = objeto.Material(
             kd=(0.3, 0.0 ,0.15),
             ke=(1.0, 0.0, 0.5),
             ka=(0.2,0.0,0.1),
@@ -64,24 +60,6 @@ def main():
             reflete=False,
             refrata=False))
     cena.OBJETOS_LISTA.append(malha)
-    
-    # bez2 = bezier.BezierCurve(2, 2, 
-    #                          [(7,0,2),(7,1,2),(7,2,2)],
-    #                          [(7,0,3),(7,1,3),(7,2,3)], 
-    #                          [(7,0,4),(7,1,4),(7,2,4)])
-    
-    # malha2 = bez2.criar_malha(resolucao=4, _material = objeto.Material(
-    #         kd=(0,0,0),
-    #         ke=(0.0, 1.0, 0.5),
-    #         ka=(0,0,0),
-    #         kr=0.5,
-    #         kt=0.5,
-    #         n=3,
-    #         od=(255,255,255),
-    #         reflete=False,
-    #         refrata=False))
-    # cena.OBJETOS_LISTA.append(malha2)
-    
     
     
     for i in range(hres):

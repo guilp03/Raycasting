@@ -53,39 +53,39 @@ class BezierCurve:
         """
         # Gerar pontos de 'sample' da curva, com base na resolução
         pontos_render: List[List[np.ndarray]] = []
+        vt_render: List[List[np.ndarray]] = []
         
         for u in np.linspace(0,1,resolucao):
             pontos_render_linha: List[np.ndarray] = []
+            vt_render_linha: List[np.ndarray] = []
             for v in np.linspace(0,1,resolucao):
                 val = self.B(u, v)
                 # print(f"{u},{v}: {val}")
                 pontos_render_linha.append(val)
+                vt_render_linha.append(np.array((u,v)))
+                
             pontos_render.append(pontos_render_linha)
+            vt_render.append(vt_render_linha)
         
         # Gerar triângulos
         objeto = obj.Objeto()
         
         # Magenta
-        delta = 1/(resolucao)
         for i in range(0, resolucao-1):
             for j in range(0, resolucao-1):
                 if text is None:
                     objeto.adcionar_triangulo((255, 0, 255), pontos_render[i][j], pontos_render[i+1][j], pontos_render[i][j+1], _material = _material)
                 else:
-                    u = i/(resolucao)
-                    v = j/(resolucao-1)
                     objeto.adcionar_triangulo((255, 0, 255), pontos_render[i][j], pontos_render[i+1][j], pontos_render[i][j+1],
-                                              (u, v), (u+delta,v), (u,v+delta), text, _material)
+                                              vt_render[i][j], vt_render[i+1][j], vt_render[i][j+1], text, _material)
         # Ciano
         for i in range(0,resolucao-1):
             for j in range(1,resolucao):
                 if text is None:
                     objeto.adcionar_triangulo((0, 255, 255), pontos_render[i][j], pontos_render[i+1][j-1], pontos_render[i+1][j], _material = _material)
                 else:
-                    u = i/(resolucao)
-                    v = j/(resolucao)
                     objeto.adcionar_triangulo((0, 255, 255), pontos_render[i][j], pontos_render[i+1][j-1], pontos_render[i+1][j],
-                                            (u, v), (u+delta,v-delta), (u+delta,v), text, _material)
+                                            vt_render[i][j], vt_render[i+1][j-1], vt_render[i+1][j], text, _material)
                 
         # TODO: consertar textura
         return objeto

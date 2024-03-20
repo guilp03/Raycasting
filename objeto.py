@@ -219,7 +219,7 @@ class Objeto:
         self.z_max = max(self.z_max, p1[2], p2[2], p3[2])
         self.z_min = min(self.z_min, p1[2], p2[2], p3[2])
         
-        if t1 and t2 and t3 and text:
+        if t1 is not None and t2 is not None and t3 is not None and text is not None:
             t1 = np.array(t1)
             t2 = np.array(t2)
             t3 = np.array(t3)
